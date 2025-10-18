@@ -8,58 +8,99 @@ import { Sidebar } from "./components/Sidebar";
 import { useContent } from "./hooks/useContent";
 import { BACKEND_URL } from "./config";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
   const [modal, setModalOpen] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const navigate = useNavigate();
 
   const contents = useContent();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
   return (
     <div className="flex">
       <div className="border-gray-2">
         <Sidebar />
       </div>
-      <div className="bg-linear-to-l from-slate-100 to-purple-300 min-h-screen p-4 w-full">
+      <div className="bg-gradient-to-l from-white to-blue-50 min-h-screen p-4 w-full">
         <CreateContentModal
           open={modal}
           onClose={() => {
             setModalOpen(false);
           }}
         />
-        <div className="flex justify-end gap-4 pt-4">
-          <Button
-            onClick={() => {
-              setModalOpen(true);
-            }}
-            variants="primary"
-            innertext="Add Content"
-            startIcon={<PlusIcon />}
-          />
-          <Button
-            variants="secondary"
-            innertext="Share Brain"
-            onClick={async () => {
-              const response = await axios.post(
-                `${BACKEND_URL}/api/v1/brain/share`,
-                {
-                  share: true,
-                },
-                {
-                  headers: {
-                    token: localStorage.getItem("token"),
-                  },
+        <div className="flex justify-between items-center pt-4">
+          <h1 className="text-3xl font-bold text-gray-800">My Second Brain</h1>
+          <div className="flex gap-4">
+            <Button
+              onClick={() => {
+                setModalOpen(true);
+              }}
+              variants="primary"
+              innertext="Add Content"
+              startIcon={<PlusIcon />}
+            />
+            <Button
+              variants="secondary"
+              innertext={isSharing ? "Sharing..." : "Share Brain"}
+              onClick={async () => {
+                setIsSharing(true);
+                try {
+                  const response = await axios.post(
+                    `${BACKEND_URL}/api/v1/brain/share`,
+                    {
+                      share: true,
+                    },
+                    {
+                      headers: {
+                        token: localStorage.getItem("token"),
+                      },
+                    }
+                  );
+                  const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
+                  navigator.clipboard.writeText(shareUrl);
+                  alert(`Share URL copied to clipboard: ${shareUrl}`);
+                } catch (error) {
+                  alert("Failed to share brain. Please try again.");
+                } finally {
+                  setIsSharing(false);
                 }
-              );
-              const shareUrl = `http://localhost:5173/share/ ${response.data.hash}`;
-              alert(shareUrl);
-            }}
-            startIcon={<ShareIcon />}
-          />
+              }}
+              startIcon={<ShareIcon />}
+              disabled={isSharing}
+            />
+            <Button
+              variants="secondary"
+              innertext="Logout"
+              onClick={handleLogout}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            />
+          </div>
         </div>
 
-        <div className="flex gap-4 flex-wrap">
-          {contents.map(({ type, link, title }) => (
-            <Card type={type} link={link} title={title} />
-          ))}
+        <div className="flex gap-4 flex-wrap mt-6">
+          {contents ? (
+            contents.length > 0 ? (
+              contents.map(({ type, link, title }, index) => (
+                <Card key={index} type={type} link={link} title={title} />
+              ))
+            ) : (
+              <div className="w-full text-center py-12">
+                <div className="text-gray-500 text-lg mb-4">No content yet</div>
+                <p className="text-gray-400">
+                  Click "Add Content" to get started!
+                </p>
+              </div>
+            )
+          ) : (
+            <div className="w-full flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>

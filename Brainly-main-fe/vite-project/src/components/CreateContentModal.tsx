@@ -7,7 +7,7 @@ import { BACKEND_URL } from "../config";
 
 enum ContentType {
   Youtube = "Youtube",
-  Twitter = "twitter",
+  PDF = "PDF",
 }
 
 export function CreateContentModal({ open, onClose }) {
@@ -59,12 +59,12 @@ export function CreateContentModal({ open, onClose }) {
                     setType(ContentType.Youtube);
                   }}></Button>
                 <Button
-                  innertext="Twitter"
+                  innertext="PDF"
                   variants={
-                    type == ContentType.Twitter ? "primary" : "secondary"
+                    type == ContentType.PDF ? "primary" : "secondary"
                   }
                   onClick={() => {
-                    setType(ContentType.Twitter);
+                    setType(ContentType.PDF);
                   }}></Button>
               </div>
               <div className="flex justify-center">

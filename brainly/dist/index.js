@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//@ts-ignore
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -21,17 +20,25 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const db_1 = require("./db");
 const utils_1 = require("./utils");
 const cors_1 = __importDefault(require("cors"));
-const JWT_SECRET = "NAVYA THE GREAT";
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const JWT_SECRET = process.env.JWT_SECRET || "NAVYA THE GREAT";
 function connectDB() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield mongoose_1.default.connect("mongodb+srv://navyasinha23:navya1875@cluster0.97m2kny.mongodb.net/Second-Brain");
+        const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/brainly";
+        yield mongoose_1.default.connect(mongoUrl);
         console.log("mongo connected");
     });
 }
 connectDB();
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "token"],
+}));
+// CORS is already handled by the main CORS middleware above
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
 const auth = (req, res, next) => {
     try {
         const token = req.headers.token;
@@ -51,7 +58,7 @@ const auth = (req, res, next) => {
 app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const requiredbody = zod_1.z.object({
         name: zod_1.z.string().min(3).max(20),
-        email: zod_1.z.string().max(20).email(),
+        email: zod_1.z.string().email(),
         password: zod_1.z.string().min(5).max(30),
     });
     const Parseddata = requiredbody.safeParse(req.body);
@@ -185,8 +192,8 @@ app.post("/api/v1/brain/share", auth, (req, res) => __awaiter(void 0, void 0, vo
         });
     }
 }));
-app.get("/api/v1/brain/:shareLink", auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const hash = req.params.shareLink;
+app.get("/api/v1/brain/:sharelink", auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.sharelink;
     const link = yield db_1.LinkModel.findOne({
         hash: hash,
     });

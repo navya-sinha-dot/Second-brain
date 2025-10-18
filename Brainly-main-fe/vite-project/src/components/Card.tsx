@@ -1,27 +1,29 @@
 import { ShareIcon } from "../Icons/ShareIcon";
+import { DustbinIcon } from "../Icons/DustbinIcon";
+import { DocumentIcon } from "../Icons/DocumentIcon";
 
 interface Cardprops {
   title: string;
   link: string;
-  type: "Twitter" | "Youtube";
+  type: "PDF" | "Youtube";
 }
 
 export function Card({ title, link, type }: Cardprops) {
   return (
     <div>
-      <div className="p-4 max-w-72 bg-white rounded-xl shadow-xl border-slate-100 border min-h-46">
+      <div className="p-4 max-w-72 bg-white rounded-xl shadow-xl border-blue-100 border min-h-46">
         <div className="flex justify-between">
           <div className="flex items-center">
-            <div className="text-gray-500 pr-2 ">
-              <ShareIcon />
+            <div className="text-blue-600 pr-2 ">
+              <DocumentIcon />
             </div>
             {title}
           </div>
           <div className="flex">
-            <div className="pr-3 text-gray-500">
-              <ShareIcon />
+            <div className="pr-3 text-blue-600">
+              <DustbinIcon />
             </div>
-            <div className="text-gray-500">
+            <div className="text-blue-600">
               <a href={link} target="_blank">
                 <ShareIcon />
               </a>
@@ -39,10 +41,17 @@ export function Card({ title, link, type }: Cardprops) {
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen></iframe>
           )}
-          {type == "twitter" && (
-            <blockquote className="twitter-tweet">
-              <a href={link}></a>
-            </blockquote>
+          {type == "PDF" && (
+           <div className="mt-2 text-sm">
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      Open full PDF
+    </a>
+  </div>
           )}
         </div>
       </div>

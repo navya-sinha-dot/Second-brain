@@ -8,7 +8,7 @@ export function SidebarComponents({
   icon: ReactElement;
 }) {
   return (
-    <div className="flex py-1 hover:bg-gray-200 rounded-md max-w-48">
+    <div className="flex py-1 hover:bg-blue-100 rounded-md max-w-48 text-blue-700">
       <div className="pr-2 ">{icon} </div>
       <div>{text}</div>
     </div>

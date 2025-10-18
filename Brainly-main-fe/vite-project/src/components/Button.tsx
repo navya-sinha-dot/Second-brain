@@ -2,15 +2,16 @@ import { ReactElement } from "react";
 
 interface Buttonprops {
   variants: "primary" | "secondary";
-
   startIcon?: ReactElement;
   innertext: string;
   onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
 }
 
 const variantStyles = {
-  primary: "bg-purple-600 text-white ",
-  secondary: "bg-purple-200 text-purple-600",
+  primary: "bg-blue-600 hover:bg-blue-700 text-white",
+  secondary: "bg-blue-100 text-blue-700 hover:bg-blue-200",
 };
 
 const defaultStyles =
@@ -21,11 +22,17 @@ export function Button({
   innertext,
   startIcon,
   onClick,
+  disabled = false,
+  className = "",
 }: Buttonprops) {
   return (
     <button
       onClick={onClick}
-      className={`${variantStyles[variants]} ${defaultStyles}`}>
+      disabled={disabled}
+      className={`${variantStyles[variants]} ${defaultStyles} ${
+        disabled ? "opacity-50 cursor-not-allowed" : ""
+      } ${className}`}
+    >
       <div className="pr-2 ">{startIcon}</div>
       {innertext}
     </button>
