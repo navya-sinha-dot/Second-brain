@@ -15,7 +15,7 @@ export function Dashboard() {
   const [isSharing, setIsSharing] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Get content and setContent from the hook
+
   const [contents, setContents] = useContent();
 
   const handleLogout = () => {
@@ -60,7 +60,7 @@ export function Dashboard() {
           }}
         />
 
-        {/* Top bar */}
+       
         <div className="flex justify-between items-center pt-4">
           <h1 className="text-3xl font-bold text-gray-800">My Second Brain</h1>
           <div className="flex gap-4">

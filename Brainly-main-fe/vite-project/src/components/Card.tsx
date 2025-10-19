@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ShareIcon } from "../Icons/ShareIcon";
 import { DustbinIcon } from "../Icons/DustbinIcon";
 import { DocumentIcon } from "../Icons/DocumentIcon";
@@ -5,49 +6,53 @@ import axios from "axios";
 import { BACKEND_URL } from "../config";
 
 interface Cardprops {
-  id: string; // <-- Add this
+  id: string;
   title: string;
   link: string;
   type: "PDF" | "Youtube";
-  onDelete?: (id: string) => void; 
+  onDelete?: (id: string) => void;
 }
 
 export function Card({ id, title, link, type, onDelete }: Cardprops) {
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | null;
+  }>({ message: "", type: null });
 
-const handleDelete = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Not authorized");
-    return;
-  }
-
-  try {
-    const response = await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
-      headers: {
-        token: token,
-      },
-    });
-
-    console.log("Delete response:", response.data);
-    if (onDelete) {
-      onDelete(id); // update UI after delete
+  const handleDelete = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setNotification({ message: "Not authorized", type: "error" });
+      return;
     }
-    alert("Content deleted successfully!");
-  } catch (error: any) {
-    console.error("Failed to delete content", error);
-    alert(
-      `Failed to delete content: ${error.response?.data?.message || error.message}`
-    );
-  }
-};
 
+    try {
+      const response = await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
+        headers: { token },
+      });
+
+      console.log("Delete response:", response.data);
+      if (onDelete) onDelete(id);
+
+      setNotification({ message: "Content deleted successfully!", type: "success" });
+
+      
+      setTimeout(() => setNotification({ message: "Deleted successfully", type: null }), 3000);
+    } catch (error: any) {
+      console.error("Failed to delete content", error);
+      setNotification({
+        message: error.response?.data?.message || "Failed to delete content",
+        type: "error",
+      });
+    }
+  };
 
   return (
     <div>
-      <div className="p-4 max-w-72 bg-white rounded-xl shadow-xl border-blue-100 border min-h-46">
+      <div className="relative p-4 max-w-72 bg-white rounded-xl shadow-xl border-blue-100 border min-h-46">
         <div className="flex justify-between">
           <div className="flex items-center">
-            <div className="text-blue-600 pr-2 ">
+            <div className="text-blue-600 pr-2">
               <DocumentIcon />
             </div>
             {title}
@@ -68,7 +73,7 @@ const handleDelete = async () => {
           </div>
         </div>
 
-        <div className="pt-3 ">
+        <div className="pt-3">
           {type === "Youtube" && (
             <iframe
               className="w-full rounded-xl"
@@ -80,6 +85,7 @@ const handleDelete = async () => {
               allowFullScreen
             ></iframe>
           )}
+
           {type === "PDF" && (
             <div className="mt-2 text-sm">
               <a
@@ -93,6 +99,19 @@ const handleDelete = async () => {
             </div>
           )}
         </div>
+
+       
+        {notification.type && (
+          <div
+            className={`mt-3 text-sm rounded-lg px-3 py-2 ${
+              notification.type === "success"
+                ? "bg-green-100 text-green-700 border border-green-300"
+                : "bg-red-100 text-red-700 border border-red-300"
+            }`}
+          >
+            {notification.message}
+          </div>
+        )}
       </div>
     </div>
   );
