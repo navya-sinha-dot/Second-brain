@@ -24,7 +24,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173","https://brain.navyasinha.xyz"]
+    origin: ["http://localhost:5173","https://brain.navyasinha.xyz"],
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "token"],
   })
