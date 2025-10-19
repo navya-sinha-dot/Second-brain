@@ -21,8 +21,10 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
-    "typescript": "^5.8.3",
     "zod": "^3.24.3"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
 }

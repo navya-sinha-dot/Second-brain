@@ -235,6 +235,8 @@ app.get("/api/v1/brain/:sharelink", auth, async (req, res) => {
   });
 });
 
-app.listen(3000, function () {
-  console.log("the server is listening on port 3000 ");
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
+  console.log("the server is listening on port"+ PORT);
 });
