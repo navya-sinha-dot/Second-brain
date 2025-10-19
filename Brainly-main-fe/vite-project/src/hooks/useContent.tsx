@@ -3,19 +3,24 @@ import { BACKEND_URL } from "../config";
 import { useEffect, useState } from "react";
 
 export function useContent() {
-  const [content, setContent] = useState([]);
+  const [content, setContent] = useState<any[]>([]);
 
   useEffect(() => {
-    axios
-      .get(`${BACKEND_URL}/content`, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      })
-
-      .then((response) => {
+    const fetchContent = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/content`, {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        });
         setContent(response.data.content);
-      });
+      } catch (error) {
+        console.error("Failed to fetch content", error);
+      }
+    };
+
+    fetchContent();
   }, []);
-  return content;
+
+  return [content, setContent] as const;
 }

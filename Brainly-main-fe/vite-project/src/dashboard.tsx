@@ -15,12 +15,38 @@ export function Dashboard() {
   const [isSharing, setIsSharing] = useState(false);
   const navigate = useNavigate();
 
-  const contents = useContent();
+  // ✅ Get content and setContent from the hook
+  const [contents, setContents] = useContent();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
+
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/v1/brain/share`,
+        {
+          share: true,
+        },
+        {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      );
+      const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
+      navigator.clipboard.writeText(shareUrl);
+      alert(`Share URL copied to clipboard: ${shareUrl}`);
+    } catch (error) {
+      alert("Failed to share brain. Please try again.");
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   return (
     <div className="flex">
       <div className="border-gray-2">
@@ -33,6 +59,8 @@ export function Dashboard() {
             setModalOpen(false);
           }}
         />
+
+        {/* Top bar */}
         <div className="flex justify-between items-center pt-4">
           <h1 className="text-3xl font-bold text-gray-800">My Second Brain</h1>
           <div className="flex gap-4">
@@ -47,29 +75,7 @@ export function Dashboard() {
             <Button
               variants="secondary"
               innertext={isSharing ? "Sharing..." : "Share Brain"}
-              onClick={async () => {
-                setIsSharing(true);
-                try {
-                  const response = await axios.post(
-                    `${BACKEND_URL}/api/v1/brain/share`,
-                    {
-                      share: true,
-                    },
-                    {
-                      headers: {
-                        token: localStorage.getItem("token"),
-                      },
-                    }
-                  );
-                  const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
-                  navigator.clipboard.writeText(shareUrl);
-                  alert(`Share URL copied to clipboard: ${shareUrl}`);
-                } catch (error) {
-                  alert("Failed to share brain. Please try again.");
-                } finally {
-                  setIsSharing(false);
-                }
-              }}
+              onClick={handleShare}
               startIcon={<ShareIcon />}
               disabled={isSharing}
             />
@@ -85,8 +91,17 @@ export function Dashboard() {
         <div className="flex gap-4 flex-wrap mt-6">
           {contents ? (
             contents.length > 0 ? (
-              contents.map(({ type, link, title }, index) => (
-                <Card key={index} type={type} link={link} title={title} />
+              contents.map((item) => (
+                <Card
+                  key={item._id}
+                  id={item._id}
+                  title={item.title}
+                  link={item.link}
+                  type={item.type}
+                  onDelete={(deletedId) =>
+                    setContents((prev) => prev.filter((c) => c._id !== deletedId))
+                  }
+                />
               ))
             ) : (
               <div className="w-full text-center py-12">

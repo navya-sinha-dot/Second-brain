@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { ContentModel, LinkModel, UserModel } from "./db";
 import { random } from "./utils";
 import cors from "cors";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
@@ -38,17 +38,30 @@ app.use(express.json());
 const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.token;
+    if (!token) {
+        res.status(401).json({
+        message: "Token not provided!",
+      });
+      return;
+    }
+    
     const verifiedtoken = jwt.verify(token as string, JWT_SECRET);
 
     if (verifiedtoken) {
       //@ts-ignore
       req.userId = verifiedtoken.id;
       next();
+    } else {
+      res.status(401).json({
+        message: "Invalid token!",
+      });
+      return;
     }
   } catch (e) {
-    res.json({
-      message: "token not provided!",
+     res.status(401).json({
+      message: "Token verification failed!",
     });
+    return;
   }
 };
 
@@ -161,18 +174,26 @@ app.get("/content", auth, async (req, res) => {
   });
 });
 
-app.delete("/content", auth, async (req, res) => {
-  const contentId = req.body.contentId;
+app.delete("/api/v1/content/:id", auth, async (req, res) => {
+  const contentId = req.params.id;
+  //@ts-ignore
+  const userId = req.userId;
 
-  await ContentModel.deleteMany({
-    contentId,
-    userId: req.body.id,
-  });
+  const existing = await ContentModel.findOne({ _id: contentId, userId });
+  if (!existing) {
+     res.status(404).json({ message: "Content not found or not authorized" });
+  
+     return;
+  }
+
+  await ContentModel.deleteOne({ _id: contentId, userId });
+  res.json({ message: "Content deleted successfully" });
 });
 
-app.post("/api/v1/brain/share", auth, async (req, res) => {
-  const share = req.body.share; // whether or not the person wants to enable or disable the link to share
 
+
+app.post("/api/v1/brain/share", auth, async (req, res) => {
+  const share = req.body.share; 
   if (share) {
     const hash = random(10);
     const linkexists = await LinkModel.findOne({
