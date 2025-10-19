@@ -15,8 +15,8 @@ export function LandingPage() {
           <div className="flex justify-between items-center h-16">
             
             <div className="flex items-center space-x-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg">
-                <BrainIcon className="w-6 h-6 text-white" />
+              <div>
+                <BrainIcon/>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-800 to-blue-600 bg-clip-text text-transparent">
                 Second Brain
@@ -49,7 +49,7 @@ export function LandingPage() {
               </a>
             </nav>
 
-            {/* Desktop CTA Buttons */}
+          
             <div className="hidden md:flex items-center space-x-3">
               <Button
                 variants="secondary"
@@ -141,7 +141,7 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      
       <main className="px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -177,11 +177,11 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Features Section */}
+          
           <div id="features" className="grid md:grid-cols-3 gap-8 mb-20">
             <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <BrainIcon className="w-6 h-6 text-blue-600" />
+              <div >
+                <BrainIcon />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 Smart Organization
@@ -243,7 +243,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* CTA Section */}
+         
           <div className="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-12 text-center text-white">
             <h2 className="text-4xl font-bold mb-4">
               Ready to Build Your Second Brain?
@@ -262,11 +262,11 @@ export function LandingPage() {
         </div>
       </main>
 
-      {/* Footer */}
+
       <footer className="bg-blue-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <BrainIcon className="w-6 h-6" />
+          <div >
+            <BrainIcon/>
             <span className="text-xl font-bold">Second Brain</span>
           </div>
           <p className="text-gray-400">
