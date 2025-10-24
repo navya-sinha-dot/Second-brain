@@ -27,17 +27,25 @@ export function Card({ id, title, link, type, onDelete }: Cardprops) {
     }
 
     try {
-      const response = await axios.delete(`${BACKEND_URL}/api/v1/content/${id}`, {
-        headers: { token },
-      });
+      const response = await axios.delete(
+        `${BACKEND_URL}/api/v1/content/${id}`,
+        {
+          headers: { token },
+        }
+      );
 
       console.log("Delete response:", response.data);
       if (onDelete) onDelete(id);
 
-      setNotification({ message: "Content deleted successfully!", type: "success" });
+      setNotification({
+        message: "Content deleted successfully!",
+        type: "success",
+      });
 
-      
-      setTimeout(() => setNotification({ message: "Deleted successfully", type: null }), 3000);
+      setTimeout(
+        () => setNotification({ message: "Deleted successfully", type: null }),
+        3000
+      );
     } catch (error: any) {
       console.error("Failed to delete content", error);
       setNotification({
@@ -87,22 +95,19 @@ export function Card({ id, title, link, type, onDelete }: Cardprops) {
           )}
 
           {type === "PDF" && (
-  <div
-    className="mt-2 cursor-pointer"
-    onClick={() => window.open(link, "_blank")}
-  >
-    <iframe
-      src={link}
-      className="w-full h-64 rounded-lg border border-gray-200 pointer-events-none"
-      title={title}
-    ></iframe>
-  </div>
-)}
-
-  
+            <div
+              className="mt-2 cursor-pointer"
+              onClick={() => window.open(link, "_blank")}
+            >
+              <iframe
+                src={link}
+                className="w-full h-64 rounded-lg border border-gray-200 pointer-events-none"
+                title={title}
+              ></iframe>
+            </div>
+          )}
         </div>
 
-       
         {notification.type && (
           <div
             className={`mt-3 text-sm rounded-lg px-3 py-2 ${
