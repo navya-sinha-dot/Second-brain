@@ -33,8 +33,6 @@ app.use(
   })
 );
 
-app.options("*", cors());
-
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
@@ -62,7 +60,7 @@ const upload = multer({
     }
     cb(null, true);
   },
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
+  limits: { fileSize: 20 * 1024 * 1024 },
 });
 
 interface AuthenticatedRequest extends Request {
@@ -295,7 +293,6 @@ app.get(
   }
 );
 
-// New route to receive pdf upload
 app.post(
   "/upload-pdf",
   auth,
