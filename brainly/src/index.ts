@@ -7,6 +7,10 @@ import { ContentModel, LinkModel, UserModel } from "./db";
 import { random } from "./utils";
 import cors from "cors";
 import * as dotenv from "dotenv";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
 
 dotenv.config();
 
@@ -22,6 +26,7 @@ connectDB();
 
 const app = express();
 
+
 app.use(
   cors({
     origin: ["http://localhost:5173","https://brain.navyasinha.xyz"],
@@ -30,25 +35,56 @@ app.use(
   })
 );
 
-// CORS is already handled by the main CORS middleware above
+
 
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 
-const auth = (req: Request, res: Response, next: NextFunction) => {
+
+// ensure uploads dir exists
+const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
+
+// multer storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}${ext}`;
+    cb(null, name);
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype !== "application/pdf") {
+        return cb(new Error("Only PDF allowed") as any, false);
+       
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
+});
+
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
+
+const auth = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.token;
     if (!token) {
-        res.status(401).json({
+      res.status(401).json({
         message: "Token not provided!",
       });
       return;
     }
     
-    const verifiedtoken = jwt.verify(token as string, JWT_SECRET);
+    const verifiedtoken = jwt.verify(token as string, JWT_SECRET) as { id: string };
 
     if (verifiedtoken) {
-      //@ts-ignore
       req.userId = verifiedtoken.id;
       next();
     } else {
@@ -58,7 +94,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
   } catch (e) {
-     res.status(401).json({
+    res.status(401).json({
       message: "Token verification failed!",
     });
     return;
@@ -137,7 +173,7 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 });
 
-app.post("/content", auth, async (req, res) => {
+app.post("/content", auth, async (req: AuthenticatedRequest, res) => {
   const link = req.body.link;
   const type = req.body.type;
   const title = req.body.title;
@@ -146,7 +182,6 @@ app.post("/content", auth, async (req, res) => {
       link: link,
       type: type,
       title: title,
-      //@ts-ignore
       userId: req.userId,
       tags: [],
     });
@@ -161,8 +196,7 @@ app.post("/content", auth, async (req, res) => {
   });
 });
 
-app.get("/content", auth, async (req, res) => {
-  //@ts-ignore
+app.get("/content", auth, async (req: AuthenticatedRequest, res) => {
   const userId = req.userId;
 
   const content = await ContentModel.find({
@@ -174,9 +208,8 @@ app.get("/content", auth, async (req, res) => {
   });
 });
 
-app.delete("/api/v1/content/:id", auth, async (req, res) => {
+app.delete("/api/v1/content/:id", auth, async (req: AuthenticatedRequest, res) => {
   const contentId = req.params.id;
-  //@ts-ignore
   const userId = req.userId;
 
   const existing = await ContentModel.findOne({ _id: contentId, userId });
@@ -190,15 +223,12 @@ app.delete("/api/v1/content/:id", auth, async (req, res) => {
   res.json({ message: "Content deleted successfully" });
 });
 
-
-
-app.post("/api/v1/brain/share", auth, async (req, res) => {
+app.post("/api/v1/brain/share", auth, async (req: AuthenticatedRequest, res) => {
   const share = req.body.share; 
   if (share) {
     const hash = random(10);
     const linkexists = await LinkModel.findOne({
-      //@ts-ignore
-      userId: req.userid,
+      userId: req.userId,
     });
     if (linkexists) {
       res.json({
@@ -208,8 +238,7 @@ app.post("/api/v1/brain/share", auth, async (req, res) => {
     }
 
     await LinkModel.create({
-      //@ts-ignore
-      userId: req.userid,
+      userId: req.userId,
       hash,
     });
 
@@ -218,8 +247,7 @@ app.post("/api/v1/brain/share", auth, async (req, res) => {
     });
   } else {
     await LinkModel.deleteOne({
-      //@ts-ignore
-      userId: req.userid,
+      userId: req.userId,
     });
 
     res.json({
@@ -228,7 +256,7 @@ app.post("/api/v1/brain/share", auth, async (req, res) => {
   }
 });
 
-app.get("/api/v1/brain/:sharelink", auth, async (req, res) => {
+app.get("/api/v1/brain/:sharelink", auth, async (req: AuthenticatedRequest, res) => {
   const hash = req.params.sharelink;
 
   const link = await LinkModel.findOne({
@@ -256,6 +284,37 @@ app.get("/api/v1/brain/:sharelink", auth, async (req, res) => {
   });
 });
 
+
+// New route to receive pdf upload
+app.post("/upload-pdf", auth, upload.single("file"), async (req: AuthenticatedRequest, res) => {
+  try {
+    // multer puts file info on req.file
+    const f = (req as any).file;
+    if (!f) {
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+
+    const title = req.body.title || "Untitled";
+    const type = req.body.type || "PDF";
+
+    const userId = req.userId;
+
+    await ContentModel.create({
+      title,
+      type,
+      link:`${req.protocol}://${req.get("host")}/uploads/${f.filename}`, // or full path /uploads/filename if you want
+      filePath: path.join("uploads", f.filename),
+      userId,
+      tags: [],
+    });
+
+    res.json({ message: "PDF uploaded", filename: f.filename });
+  } catch (err) {
+    console.error("upload-pdf error:", err);
+    res.status(500).json({ message: "Upload failed", error: err });
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {

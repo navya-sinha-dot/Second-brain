@@ -10,74 +10,159 @@ enum ContentType {
   PDF = "PDF",
 }
 
-export function CreateContentModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CreateContentModal({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
-  const [type, setType] = useState(ContentType.Youtube);
+  const [type, setType] = useState<ContentType>(ContentType.Youtube);
+  const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function addcontent() {
-    const title = titleRef.current?.value;
-    const link = linkRef.current?.value;
+  if (!open) return null;
 
-    await axios.post(
-      `${BACKEND_URL}/content`,
-      {
-        link,
-        type,
-        title,
-      },
-      {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
+  async function addContent() {
+    const title = titleRef.current?.value?.trim();
+    if (!title) {
+      alert("Please add a title.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (type === ContentType.Youtube) {
+        const link = linkRef.current?.value?.trim();
+        if (!link) {
+          alert("Please add a YouTube link.");
+          setIsLoading(false);
+          return;
+        }
+
+        await axios.post(
+          `${BACKEND_URL}/content`,
+          { title, link, type },
+          { headers: { token: localStorage.getItem("token") } }
+        );
+      } else {
+        if (!file) {
+          alert("Please select a PDF file.");
+          setIsLoading(false);
+          return;
+        }
+
+        const form = new FormData();
+        form.append("title", title);
+        form.append("type", type);
+        form.append("file", file);
+
+        await axios.post(`${BACKEND_URL}/upload-pdf`, form, {
+          headers: {
+            token: localStorage.getItem("token"),
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
-    );
-    onClose();
+
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function openFileDialog() {
+    document.getElementById("pdf-upload")?.click();
   }
 
   return (
-    <div>
-      {open && (
-        <div className="w-full h-screen bg-slate-500/50 backdrop-blur-sm fixed top-0 left-0 flex justify-center">
-          <div className="flex flex-col justify-center">
-            {" "}
-            <div className="bg-white p-4 rounded-xl">
-              <div className="flex justify-end">
-                <div onClick={onClose}>
-                  <CrossIcon />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-700/40 backdrop-blur-sm px-4">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg p-8 sm:p-10">
+        
+        <button
+          aria-label="Close"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition"
+        >
+          <CrossIcon />
+        </button>
+
+       
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+          Add New Content
+        </h2>
+
+       
+        <div className="flex flex-col items-center">
+         
+          <div className="max-w-sm">
+            <Input placeholder="Title" reference={titleRef} />
+          </div>
+
+          
+          <div className="max-w-sm">
+            {type === ContentType.Youtube ? (
+              <Input placeholder="YouTube Link" reference={linkRef} />
+            ) : (
+              <div className="space-y-2">
+                <div
+                  onClick={openFileDialog}
+                  className="cursor-pointer rounded-xl border border-dashed border-gray-300 py-3 px-4 bg-white hover:bg-gray-50 transition text-gray-700 text-sm"
+                >
+                  {file ? (
+                    <span className="font-medium">{file.name}</span>
+                  ) : (
+                    <span className="text-gray-400">
+                      Select a PDF from your computer
+                    </span>
+                  )}
                 </div>
-              </div>
-              <Input placeholder="Title" reference={titleRef} />
-              <Input placeholder="Link" reference={linkRef} />
-              <div className="flex justify-center m-1 p-2 gap-3">
-                <Button
-                  innertext="Youtube"
-                  variants={
-                    type == ContentType.Youtube ? "primary" : "secondary"
-                  }
-                  onClick={() => {
-                    setType(ContentType.Youtube);
-                  }}></Button>
-                <Button
-                  innertext="PDF"
-                  variants={
-                    type == ContentType.PDF ? "primary" : "secondary"
-                  }
-                  onClick={() => {
-                    setType(ContentType.PDF);
-                  }}></Button>
-              </div>
-              <div className="flex justify-center">
-                <Button
-                  variants="primary"
-                  innertext="Submit"
-                  onClick={addcontent}
+                <input
+                  id="pdf-upload"
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const selected = e.target.files?.[0] ?? null;
+                    setFile(selected);
+                  }}
                 />
+                <p className="text-xs text-gray-400">Only PDF files are allowed.</p>
               </div>
-            </div>
+            )}
+          </div>
+
+         
+          <div className="flex justify-center gap-4 pt-2">
+            <Button
+              variants={type === ContentType.Youtube ? "primary" : "secondary"}
+              innertext="YouTube"
+              onClick={() => setType(ContentType.Youtube)}
+            />
+            <Button
+              variants={type === ContentType.PDF ? "primary" : "secondary"}
+              innertext="PDF"
+              onClick={() => setType(ContentType.PDF)}
+            />
           </div>
         </div>
-      )}
+
+      
+        <div className="flex justify-center mt-5">
+          <Button
+            variants="primary"
+            innertext={isLoading ? "Submitting..." : "Submit"}
+            onClick={addContent}
+            disabled={isLoading}
+          />
+        </div>
+      </div>
     </div>
   );
 }

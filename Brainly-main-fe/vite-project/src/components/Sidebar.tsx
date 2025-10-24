@@ -11,7 +11,7 @@ export function Sidebar() {
       </h1>
       <div className="pt-4">
         <div className="pb-4 cursor-pointer">
-          <SidebarComponents text="Twitter" icon={<TwitterIcon />} />
+          <SidebarComponents text="PDF" icon={<TwitterIcon />} />
         </div>
         <div className="pb-4 cursor-pointer">
           <SidebarComponents text="Youtube" icon={<YoutubeIcon />} />

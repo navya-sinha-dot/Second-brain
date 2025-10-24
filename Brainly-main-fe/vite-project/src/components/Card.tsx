@@ -87,17 +87,19 @@ export function Card({ id, title, link, type, onDelete }: Cardprops) {
           )}
 
           {type === "PDF" && (
-            <div className="mt-2 text-sm">
-              <a
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                Open full PDF
-              </a>
-            </div>
-          )}
+  <div
+    className="mt-2 cursor-pointer"
+    onClick={() => window.open(link, "_blank")}
+  >
+    <iframe
+      src={link}
+      className="w-full h-64 rounded-lg border border-gray-200 pointer-events-none"
+      title={title}
+    ></iframe>
+  </div>
+)}
+
+  
         </div>
 
        
