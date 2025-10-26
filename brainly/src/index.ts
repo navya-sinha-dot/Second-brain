@@ -10,19 +10,24 @@ import * as dotenv from "dotenv";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "NAVYA THE GREAT";
+try {
+  async function connectDB() {
+    const mongoUrl =
+      process.env.MONGO_URL || "mongodb://localhost:27017/brainly";
+    await mongoose.connect(mongoUrl);
+    console.log("mongo connected");
+  }
 
-async function connectDB() {
-  const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/brainly";
-  await mongoose.connect(mongoUrl);
-  console.log("mongo connected");
+  connectDB();
+} catch (err) {
+  console.log("not  able to  connect to db");
 }
-
-connectDB();
-
 const app = express();
 
 app.use(
@@ -42,27 +47,26 @@ const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
 
 // multer storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2, 9)}${ext}`;
-    cb(null, name);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const name = `${Date.now()}-${file.originalname.split(".")[0]}`;
+    return {
+      folder: "brainly_uploads", // works fine now
+      resource_type: "raw", // allows PDFs
+      allowed_formats: ["pdf"], // restricts to PDF
+      public_id: name, // custom name
+    };
   },
 });
 
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Only PDF allowed") as any, false);
-    }
-    cb(null, true);
-  },
-  limits: { fileSize: 20 * 1024 * 1024 },
-});
+const upload = multer({ storage });
 
 interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -300,8 +304,7 @@ app.post(
   upload.single("file"),
   async (req: AuthenticatedRequest, res) => {
     try {
-      // multer puts file info on req.file
-      const f = (req as any).file;
+      const f = req.file as Express.Multer.File;
       if (!f) {
         res.status(400).json({ message: "No file uploaded" });
         return;
@@ -309,19 +312,20 @@ app.post(
 
       const title = req.body.title || "Untitled";
       const type = req.body.type || "PDF";
-
       const userId = req.userId;
+
+      // Cloudinary gives a secure URL
+      const fileUrl = (f as any).path;
 
       await ContentModel.create({
         title,
         type,
-        link: `${req.protocol}://${req.get("host")}/uploads/${f.filename}`, // or full path /uploads/filename if you want
-        filePath: path.join("uploads", f.filename),
+        link: fileUrl,
         userId,
         tags: [],
       });
 
-      res.json({ message: "PDF uploaded", filename: f.filename });
+      res.json({ message: "PDF uploaded", url: fileUrl });
     } catch (err) {
       console.error("upload-pdf error:", err);
       res.status(500).json({ message: "Upload failed", error: err });
