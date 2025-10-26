@@ -299,23 +299,26 @@ app.get(
 );
 
 app.post(
-  "/upload-pdf",
+  "/api/v1/upload-pdf",
   auth,
   upload.single("file"),
   async (req: AuthenticatedRequest, res) => {
     try {
-      const f = req.file as Express.Multer.File;
+      const f = req.file as any;
+
       if (!f) {
         res.status(400).json({ message: "No file uploaded" });
         return;
       }
 
+      const fileUrl = f.path || f.url || f.secure_url;
+      if (!fileUrl) {
+        throw new Error("Cloudinary upload failed — no URL returned.");
+      }
+
       const title = req.body.title || "Untitled";
       const type = req.body.type || "PDF";
       const userId = req.userId;
-
-      // Cloudinary gives a secure URL
-      const fileUrl = (f as any).path;
 
       await ContentModel.create({
         title,
@@ -325,10 +328,19 @@ app.post(
         tags: [],
       });
 
-      res.json({ message: "PDF uploaded", url: fileUrl });
-    } catch (err) {
+      res.json({ message: "PDF uploaded successfully", url: fileUrl });
+    } catch (err: any) {
       console.error("upload-pdf error:", err);
-      res.status(500).json({ message: "Upload failed", error: err });
+      if (err instanceof Error) {
+        console.error("Error name:", err.name);
+        console.error("Error message:", err.message);
+        console.error("Error stack:", err.stack);
+      }
+
+      res.status(500).json({
+        message: "Upload failed",
+        error: err.message || err,
+      });
     }
   }
 );
