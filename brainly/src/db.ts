@@ -21,7 +21,7 @@ const Contents = new Schema({
   type: String,
   tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
   title: { type: String, required: true },
-  filePath: { type: String }, // For PDF uploads
+  filePath: { type: String },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",

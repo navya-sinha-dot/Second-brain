@@ -197,13 +197,12 @@ app.post(
         return;
       }
 
-      // Re-upload the file as resource_type:auto so Cloudinary allows preview
       const uploadResult = await cloudinary.uploader.upload(f.path, {
         resource_type: "raw",
         folder: "brainly_uploads",
         format: "pdf",
         public_id: `${Date.now()}-${f.originalname.split(".")[0]}`,
-        flags: "attachment:false", // prevents forced download
+        flags: "attachment:false",
       });
 
       const fileUrl = uploadResult.secure_url;
