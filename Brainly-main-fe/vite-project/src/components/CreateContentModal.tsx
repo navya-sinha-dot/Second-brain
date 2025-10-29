@@ -21,6 +21,7 @@ export function CreateContentModal({
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentType>(ContentType.Youtube);
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!open) return null;
@@ -46,7 +47,9 @@ export function CreateContentModal({
         await axios.post(
           `${BACKEND_URL}/content`,
           { title, link, type },
-          { headers: { token: localStorage.getItem("token") } }
+          {
+            headers: { token: localStorage.getItem("token") || "" },
+          }
         );
       } else {
         if (!file) {
@@ -55,22 +58,48 @@ export function CreateContentModal({
           return;
         }
 
-        const form = new FormData();
-        form.append("title", title);
-        form.append("type", type);
-        form.append("file", file);
+        // 1️⃣ Get Cloudinary signed credentials
+        const sigRes = await axios.get(
+          `${BACKEND_URL}/api/v1/cloudinary-signature`,
+          {
+            headers: { token: localStorage.getItem("token") || "" },
+          }
+        );
 
-        await axios.post(`${BACKEND_URL}/upload-pdf`, form, {
-          headers: {
-            token: localStorage.getItem("token"),
-            "Content-Type": "multipart/form-data",
-          },
+        const { timestamp, signature, cloudName, apiKey, folder } = sigRes.data;
+
+        // 2️⃣ Upload directly to Cloudinary
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", apiKey);
+        formData.append("timestamp", timestamp);
+        formData.append("signature", signature);
+        formData.append("folder", folder);
+        formData.append("resource_type", "auto");
+
+        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
+
+        const uploadRes = await axios.post(cloudinaryUrl, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
+
+        const uploadedUrl = uploadRes.data.secure_url;
+
+        // 3️⃣ Save metadata in backend
+        await axios.post(
+          `${BACKEND_URL}/api/v1/save-pdf`,
+          { title, link: uploadedUrl, type: "PDF" },
+          {
+            headers: { token: localStorage.getItem("token") || "" },
+          }
+        );
+
+        window.open(uploadedUrl, "_blank");
       }
 
       onClose();
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error("Upload error:", err.response?.data || err.message);
       alert("Upload failed. Try again.");
     } finally {
       setIsLoading(false);
@@ -84,7 +113,6 @@ export function CreateContentModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-700/40 backdrop-blur-sm px-4">
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg p-8 sm:p-10">
-        
         <button
           aria-label="Close"
           onClick={onClose}
@@ -93,27 +121,23 @@ export function CreateContentModal({
           <CrossIcon />
         </button>
 
-       
         <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
           Add New Content
         </h2>
 
-       
         <div className="flex flex-col items-center">
-         
           <div className="max-w-sm">
             <Input placeholder="Title" reference={titleRef} />
           </div>
 
-          
           <div className="max-w-sm">
             {type === ContentType.Youtube ? (
               <Input placeholder="YouTube Link" reference={linkRef} />
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-3 w-full">
                 <div
                   onClick={openFileDialog}
-                  className="cursor-pointer rounded-xl border border-dashed border-gray-300 py-3 px-4 bg-white hover:bg-gray-50 transition text-gray-700 text-sm"
+                  className="cursor-pointer rounded-xl border border-dashed border-gray-300 py-3 px-4 bg-white hover:bg-gray-50 transition text-gray-700 text-sm text-center"
                 >
                   {file ? (
                     <span className="font-medium">{file.name}</span>
@@ -123,6 +147,7 @@ export function CreateContentModal({
                     </span>
                   )}
                 </div>
+
                 <input
                   id="pdf-upload"
                   type="file"
@@ -131,15 +156,31 @@ export function CreateContentModal({
                   onChange={(e) => {
                     const selected = e.target.files?.[0] ?? null;
                     setFile(selected);
+                    if (selected) {
+                      const url = URL.createObjectURL(selected);
+                      setPreviewUrl(url);
+                    } else {
+                      setPreviewUrl(null);
+                    }
                   }}
                 />
-                <p className="text-xs text-gray-400">Only PDF files are allowed.</p>
+
+                {previewUrl && (
+                  <iframe
+                    src={previewUrl}
+                    title="PDF Preview"
+                    className="w-full h-64 border rounded-lg"
+                  />
+                )}
+
+                <p className="text-xs text-gray-400 text-center">
+                  Only PDF files are allowed. Click the preview to view.
+                </p>
               </div>
             )}
           </div>
 
-         
-          <div className="flex justify-center gap-4 pt-2">
+          <div className="flex justify-center gap-4 pt-3">
             <Button
               variants={type === ContentType.Youtube ? "primary" : "secondary"}
               innertext="YouTube"
@@ -153,7 +194,6 @@ export function CreateContentModal({
           </div>
         </div>
 
-      
         <div className="flex justify-center mt-5">
           <Button
             variants="primary"

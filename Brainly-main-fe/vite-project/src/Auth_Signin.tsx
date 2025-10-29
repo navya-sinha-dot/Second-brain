@@ -25,7 +25,7 @@ export function Signin() {
         return;
       }
 
-      const responses = await axios.post(BACKEND_URL +"/api/v1/signin", {
+      const responses = await axios.post(BACKEND_URL + "/api/v1/signin", {
         email,
         password,
       });
@@ -63,7 +63,11 @@ export function Signin() {
             </div>
           )}
           <Input placeholder="Email" reference={emailRef} />
-          <Input placeholder="Password" type="password" reference={passwordRef} />
+          <Input
+            placeholder="Password"
+            type="password"
+            reference={passwordRef}
+          />
           <div className="flex justify-center mb-4">
             <Button
               variants="primary"
