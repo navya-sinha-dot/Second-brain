@@ -8,26 +8,20 @@ import { random } from "./utils";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "NAVYA THE GREAT";
-try {
-  async function connectDB() {
-    const mongoUrl =
-      process.env.MONGO_URL || "mongodb://localhost:27017/brainly";
-    await mongoose.connect(mongoUrl);
-    console.log("mongo connected");
-  }
 
-  connectDB();
-} catch (err) {
-  console.log("not  able to  connect to db");
+async function connectDB() {
+  const mongoUrl = process.env.MONGO_URL || "mongodb://localhost:27017/brainly";
+  await mongoose.connect(mongoUrl);
+  console.log("mongo connected");
 }
+connectDB();
+
 const app = express();
 
 app.use(
@@ -40,13 +34,7 @@ app.use(
 );
 
 app.use(express.json());
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-// ensure uploads dir exists
-const UPLOAD_DIR = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
-
-// multer storage
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -55,15 +43,12 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: async (req, file) => {
-    const name = `${Date.now()}-${file.originalname.split(".")[0]}`;
-    return {
-      folder: "brainly_uploads", // works fine now
-      resource_type: "raw", // allows PDFs
-      allowed_formats: ["pdf"], // restricts to PDF
-      public_id: name, // custom name
-    };
-  },
+  params: async (req, file) => ({
+    folder: "brainly_uploads",
+    resource_type: "raw",
+    allowed_formats: ["pdf"],
+    public_id: `${Date.now()}-${file.originalname.split(".")[0]}`,
+  }),
 });
 
 const upload = multer({ storage });
@@ -76,30 +61,16 @@ const auth = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.token;
     if (!token) {
-      res.status(401).json({
-        message: "Token not provided!",
-      });
+      res.status(401).json({ message: "Token not provided!" });
       return;
     }
-
     const verifiedtoken = jwt.verify(token as string, JWT_SECRET) as {
       id: string;
     };
-
-    if (verifiedtoken) {
-      req.userId = verifiedtoken.id;
-      next();
-    } else {
-      res.status(401).json({
-        message: "Invalid token!",
-      });
-      return;
-    }
-  } catch (e) {
-    res.status(401).json({
-      message: "Token verification failed!",
-    });
-    return;
+    req.userId = verifiedtoken.id;
+    next();
+  } catch {
+    res.status(401).json({ message: "Token verification failed!" });
   }
 };
 
@@ -109,105 +80,55 @@ app.post("/api/v1/signup", async (req, res) => {
     email: z.string().email(),
     password: z.string().min(5).max(30),
   });
-
   const Parseddata = requiredbody.safeParse(req.body);
-
   if (!Parseddata.success) {
-    res.json({
-      message: "incorrect entries",
-      error: Parseddata.error,
-    });
+    res.json({ message: "incorrect entries", error: Parseddata.error });
     return;
   }
-
-  const name = req.body.name;
-  const email = req.body.email;
-  const password = req.body.password;
+  const { name, email, password } = req.body;
   try {
     const hashedpassword = await bcrypt.hash(password, 5);
-
-    await UserModel.create({
-      name: name,
-      email: email,
-      password: hashedpassword,
-    });
-  } catch (e) {
-    res.json({
-      message: "user already exists",
-    });
-    return;
+    await UserModel.create({ name, email, password: hashedpassword });
+    res.json({ message: "you are signed Up" });
+  } catch {
+    res.json({ message: "user already exists" });
   }
-  res.json({
-    message: "you are signed Up",
-  });
 });
 
 app.post("/api/v1/signin", async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  const founduser = await UserModel.findOne({
-    email: email,
-  });
+  const { email, password } = req.body;
+  const founduser = await UserModel.findOne({ email });
   if (!founduser) {
-    res.json({
-      message: "incorrect credentials",
-    });
+    res.json({ message: "incorrect credentials" });
+    return;
+  }
+  const passwordmatched = await bcrypt.compare(password, founduser.password);
+  if (passwordmatched) {
+    const token = jwt.sign({ id: founduser._id }, JWT_SECRET);
+    res.json({ token });
   } else {
-    const passwordmatched = await bcrypt.compare(password, founduser.password);
-
-    if (founduser && passwordmatched) {
-      const token = jwt.sign(
-        {
-          id: founduser._id,
-        },
-        JWT_SECRET
-      );
-
-      res.json({
-        token,
-      });
-    } else {
-      res.json({
-        message: "incorrect password",
-      });
-    }
+    res.json({ message: "incorrect password" });
   }
 });
 
 app.post("/content", auth, async (req: AuthenticatedRequest, res) => {
-  const link = req.body.link;
-  const type = req.body.type;
-  const title = req.body.title;
-  try {
-    await ContentModel.create({
-      link: link,
-      type: type,
-      title: title,
-      userId: req.userId,
-      tags: [],
-    });
-  } catch (e) {
-    res.json({
-      message: e,
-    });
-    return;
-  }
-  res.json({
-    message: "content created!",
+  const { link, type, title } = req.body;
+  await ContentModel.create({
+    link,
+    type,
+    title,
+    userId: req.userId,
+    tags: [],
   });
+  res.json({ message: "content created!" });
 });
 
 app.get("/content", auth, async (req: AuthenticatedRequest, res) => {
-  const userId = req.userId;
-
-  const content = await ContentModel.find({
-    userId: userId,
-  }).populate("userId", "name");
-
-  res.json({
-    content: content,
-  });
+  const content = await ContentModel.find({ userId: req.userId }).populate(
+    "userId",
+    "name"
+  );
+  res.json({ content });
 });
 
 app.delete(
@@ -216,14 +137,11 @@ app.delete(
   async (req: AuthenticatedRequest, res) => {
     const contentId = req.params.id;
     const userId = req.userId;
-
     const existing = await ContentModel.findOne({ _id: contentId, userId });
     if (!existing) {
       res.status(404).json({ message: "Content not found or not authorized" });
-
       return;
     }
-
     await ContentModel.deleteOne({ _id: contentId, userId });
     res.json({ message: "Content deleted successfully" });
   }
@@ -236,32 +154,16 @@ app.post(
     const share = req.body.share;
     if (share) {
       const hash = random(10);
-      const linkexists = await LinkModel.findOne({
-        userId: req.userId,
-      });
+      const linkexists = await LinkModel.findOne({ userId: req.userId });
       if (linkexists) {
-        res.json({
-          message: "/share" + linkexists.hash,
-        });
+        res.json({ message: "/share" + linkexists.hash });
         return;
       }
-
-      await LinkModel.create({
-        userId: req.userId,
-        hash,
-      });
-
-      res.json({
-        message: "/share" + hash,
-      });
+      await LinkModel.create({ userId: req.userId, hash });
+      res.json({ message: "/share" + hash });
     } else {
-      await LinkModel.deleteOne({
-        userId: req.userId,
-      });
-
-      res.json({
-        message: "deleted link ",
-      });
+      await LinkModel.deleteOne({ userId: req.userId });
+      res.json({ message: "deleted link " });
     }
   }
 );
@@ -271,30 +173,14 @@ app.get(
   auth,
   async (req: AuthenticatedRequest, res) => {
     const hash = req.params.sharelink;
-
-    const link = await LinkModel.findOne({
-      hash: hash,
-    });
-
+    const link = await LinkModel.findOne({ hash });
     if (!link) {
-      res.json({
-        message: "incorrect link",
-      });
+      res.json({ message: "incorrect link" });
       return;
     }
-
-    const content = await ContentModel.findOne({
-      userId: link.userId,
-    });
-
-    const user = await UserModel.findOne({
-      _id: link.userId,
-    });
-
-    res.json({
-      username: user?.name,
-      content: content,
-    });
+    const content = await ContentModel.findOne({ userId: link.userId });
+    const user = await UserModel.findOne({ _id: link.userId });
+    res.json({ username: user?.name, content });
   }
 );
 
@@ -305,19 +191,24 @@ app.post(
   async (req: AuthenticatedRequest, res) => {
     try {
       const f = req.file as any;
-
       if (!f) {
         res.status(400).json({ message: "No file uploaded" });
+
         return;
       }
 
-      const fileUrl = f.path || f.url || f.secure_url;
-      if (!fileUrl) {
-        throw new Error("Cloudinary upload failed — no URL returned.");
-      }
+      // Re-upload the file as resource_type:auto so Cloudinary allows preview
+      const uploadResult = await cloudinary.uploader.upload(f.path, {
+        resource_type: "raw",
+        folder: "brainly_uploads",
+        format: "pdf",
+        public_id: `${Date.now()}-${f.originalname.split(".")[0]}`,
+        flags: "attachment:false", // prevents forced download
+      });
 
-      const title = req.body.title || "Untitled";
-      const type = req.body.type || "PDF";
+      const fileUrl = uploadResult.secure_url;
+      const title = req.body.title || f.originalname || "Untitled";
+      const type = "PDF";
       const userId = req.userId;
 
       await ContentModel.create({
@@ -328,15 +219,12 @@ app.post(
         tags: [],
       });
 
-      res.json({ message: "PDF uploaded successfully", url: fileUrl });
+      res.json({
+        message: "PDF uploaded successfully",
+        url: fileUrl,
+      });
     } catch (err: any) {
       console.error("upload-pdf error:", err);
-      if (err instanceof Error) {
-        console.error("Error name:", err.name);
-        console.error("Error message:", err.message);
-        console.error("Error stack:", err.stack);
-      }
-
       res.status(500).json({
         message: "Upload failed",
         error: err.message || err,
@@ -345,7 +233,52 @@ app.post(
   }
 );
 
+app.get("/api/v1/cloudinary-signature", async (req, res) => {
+  try {
+    const timestamp = Math.round(Date.now() / 1000);
+    const folder = "brainly_uploads"; // adjust folder if needed
+
+    const signature = cloudinary.utils.api_sign_request(
+      { timestamp, folder },
+      process.env.CLOUDINARY_API_SECRET!
+    );
+
+    res.json({
+      timestamp,
+      signature,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      folder,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error generating signature" });
+  }
+});
+
+app.post(
+  "/api/v1/save-pdf",
+  auth,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { link, title } = req.body;
+      await ContentModel.create({
+        link,
+        title,
+        type: "PDF",
+        userId: req.userId,
+        tags: [],
+      });
+      res.json({ message: "Saved successfully" });
+    } catch (err: any) {
+      res
+        .status(500)
+        .json({ message: "Failed to save content", error: err.message });
+    }
+  }
+);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
-  console.log("the server is listening on port" + PORT);
+  console.log("the server is listening on port " + PORT);
 });
