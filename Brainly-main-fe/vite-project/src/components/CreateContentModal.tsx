@@ -13,9 +13,13 @@ enum ContentType {
 export function CreateContentModal({
   open,
   onClose,
+  contents,
+  setContents,
 }: {
   open: boolean;
   onClose: () => void;
+  contents: any[];
+  setContents: (contents: any[]) => void;
 }) {
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
@@ -51,14 +55,14 @@ export function CreateContentModal({
             headers: { token: localStorage.getItem("token") || "" },
           }
         );
+
+        setContents([...contents, { title, link, type }]);
       } else {
         if (!file) {
           alert("Please select a PDF file.");
           setIsLoading(false);
           return;
         }
-
-        // 1️⃣ Get Cloudinary signed credentials
         const sigRes = await axios.get(
           `${BACKEND_URL}/api/v1/cloudinary-signature`,
           {
@@ -68,7 +72,6 @@ export function CreateContentModal({
 
         const { timestamp, signature, cloudName, apiKey, folder } = sigRes.data;
 
-        // 2️⃣ Upload directly to Cloudinary
         const formData = new FormData();
         formData.append("file", file);
         formData.append("api_key", apiKey);
@@ -84,8 +87,6 @@ export function CreateContentModal({
         });
 
         const uploadedUrl = uploadRes.data.secure_url;
-
-        // 3️⃣ Save metadata in backend
         await axios.post(
           `${BACKEND_URL}/api/v1/save-pdf`,
           { title, link: uploadedUrl, type: "PDF" },
@@ -93,6 +94,8 @@ export function CreateContentModal({
             headers: { token: localStorage.getItem("token") || "" },
           }
         );
+
+        setContents([...contents, { title, link: uploadedUrl, type }]);
 
         window.open(uploadedUrl, "_blank");
       }

@@ -52,7 +52,6 @@ export function Card({ id, title, link, type, onDelete }: CardProps) {
     }
   };
 
-  // Handle click to open PDF in new tab
   const openPdfInNewTab = () => {
     if (link) {
       window.open(link, "_blank", "noopener,noreferrer");
@@ -86,7 +85,6 @@ export function Card({ id, title, link, type, onDelete }: CardProps) {
         </div>
       </div>
 
-      {/* PREVIEW SECTION */}
       <div className="pt-3">
         {type === "Youtube" && link && (
           <iframe
@@ -115,7 +113,6 @@ export function Card({ id, title, link, type, onDelete }: CardProps) {
         )}
       </div>
 
-      {/* Notification Toast */}
       {notification.type && (
         <div
           className={`mt-3 text-sm rounded-lg px-3 py-2 ${

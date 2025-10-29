@@ -15,7 +15,6 @@ export function Dashboard() {
   const [isSharing, setIsSharing] = useState(false);
   const navigate = useNavigate();
 
-
   const [contents, setContents] = useContent();
 
   const handleLogout = () => {
@@ -54,13 +53,14 @@ export function Dashboard() {
       </div>
       <div className="bg-gradient-to-l from-white to-blue-50 min-h-screen p-4 w-full">
         <CreateContentModal
+          contents={contents}
+          setContents={setContents}
           open={modal}
           onClose={() => {
             setModalOpen(false);
           }}
         />
 
-       
         <div className="flex justify-between items-center pt-4">
           <h1 className="text-3xl font-bold text-gray-800">My Second Brain</h1>
           <div className="flex gap-4">
@@ -99,7 +99,9 @@ export function Dashboard() {
                   link={item.link}
                   type={item.type}
                   onDelete={(deletedId) =>
-                    setContents((prev) => prev.filter((c) => c._id !== deletedId))
+                    setContents((prev) =>
+                      prev.filter((c) => c._id !== deletedId)
+                    )
                   }
                 />
               ))
