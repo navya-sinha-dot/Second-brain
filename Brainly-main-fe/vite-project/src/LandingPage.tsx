@@ -20,7 +20,6 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 text-gray-900">
-      {/* Header */}
       <motion.header
         variants={fadeUp}
         initial="hidden"
@@ -29,7 +28,6 @@ export function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
             <div className="flex items-center space-x-3">
               <BrainIcon />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-800 to-blue-600 bg-clip-text text-transparent">
@@ -37,7 +35,6 @@ export function LandingPage() {
               </span>
             </div>
 
-            {/* Desktop Nav */}
             <nav className="hidden md:flex items-center space-x-8 font-medium">
               {["Features", "About", "Contact"].map((item) => (
                 <a
@@ -56,7 +53,6 @@ export function LandingPage() {
               ))}
             </nav>
 
-            {/* Buttons */}
             <div className="hidden md:flex items-center space-x-3">
               <Button
                 variants="secondary"
@@ -72,7 +68,6 @@ export function LandingPage() {
               />
             </div>
 
-            {/* Mobile Menu Button */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -111,7 +106,6 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Mobile Menu */}
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -160,11 +154,9 @@ export function LandingPage() {
         </div>
       </motion.header>
 
-      {/* Hero Section */}
       <main className="px-6">
         <div className="max-w-7xl mx-auto">
           <section className="min-h-[80vh] flex flex-col-reverse md:flex-row items-center justify-between px-6 md:px-20 lg:px-32 bg-gradient-to-br from-white via-blue-50 to-blue-100 overflow-hidden">
-            {/* Left Text Section */}
             <motion.div
               variants={fadeUp}
               initial="hidden"
@@ -202,7 +194,6 @@ export function LandingPage() {
               </div>
             </motion.div>
 
-            {/* Right Image Section */}
             <motion.div
               variants={fadeUp}
               initial="hidden"
@@ -218,7 +209,6 @@ export function LandingPage() {
             </motion.div>
           </section>
 
-          {/* Features Section */}
           <div
             id="features"
             className="grid md:grid-cols-3 gap-10 mb-24 text-center mt-20"
@@ -285,7 +275,6 @@ export function LandingPage() {
             ))}
           </div>
 
-          {/* Call to Action */}
           <motion.div
             className="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-3xl p-14 text-center text-white shadow-lg"
             initial="hidden"
@@ -314,7 +303,6 @@ export function LandingPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-blue-950 text-white py-10 mt-16">
         <div className="max-w-7xl mx-auto px-6 text-center space-y-3">
           <div className="flex justify-center items-center space-x-2">
