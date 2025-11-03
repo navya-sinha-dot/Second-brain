@@ -5,7 +5,7 @@ import { LandingPage } from "./LandingPage";
 import { AuthGuard } from "./components/AuthGuard";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { ErrorPage } from "./Error";
-
+import SharePage from "./sharepage";
 function App() {
   return (
     <div>
@@ -22,6 +22,7 @@ function App() {
               </AuthGuard>
             }
           ></Route>
+          <Route path="/share/:hash" element={<SharePage />}></Route>
           <Route path="*" element={<ErrorPage />}></Route>
         </Routes>
       </BrowserRouter>

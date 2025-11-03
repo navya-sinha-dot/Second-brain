@@ -27,17 +27,12 @@ export function Dashboard() {
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/brain/share`,
-        {
-          share: true,
-        },
-        {
-          headers: {
-            token: localStorage.getItem("token"),
-          },
-        }
+        { share: true },
+        { headers: { token: localStorage.getItem("token") } }
       );
+
       const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
-      navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareUrl);
       alert(`Share URL copied to clipboard: ${shareUrl}`);
     } catch (error) {
       alert("Failed to share brain. Please try again.");

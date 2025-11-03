@@ -156,33 +156,55 @@ app.post(
       const hash = random(10);
       const linkexists = await LinkModel.findOne({ userId: req.userId });
       if (linkexists) {
-        res.json({ message: "/share" + linkexists.hash });
+        res.json({ hash: linkexists.hash });
         return;
       }
       await LinkModel.create({ userId: req.userId, hash });
-      res.json({ message: "/share" + hash });
+      res.json({ hash });
     } else {
       await LinkModel.deleteOne({ userId: req.userId });
-      res.json({ message: "deleted link " });
+      res.json({ message: "deleted link" });
     }
   }
 );
 
-app.get(
-  "/api/v1/brain/:sharelink",
-  auth,
-  async (req: AuthenticatedRequest, res) => {
+app.get("/api/v1/brain/:sharelink", async (req, res) => {
+  try {
     const hash = req.params.sharelink;
     const link = await LinkModel.findOne({ hash });
+
     if (!link) {
       res.json({ message: "incorrect link" });
       return;
     }
-    const content = await ContentModel.findOne({ userId: link.userId });
+
+    const contents = await ContentModel.find({ userId: link.userId });
     const user = await UserModel.findOne({ _id: link.userId });
-    res.json({ username: user?.name, content });
+
+    // If no contents found
+    if (!contents || contents.length === 0) {
+      res.json({
+        username: user?.name || "Unknown User",
+        contents: [],
+        message: "No content found for this user",
+      });
+      return;
+    }
+
+    res.json({
+      username: user?.name || "Unknown User",
+      contents: contents.map((c) => ({
+        title: c.title,
+        type: c.type,
+        link: c.link,
+        tags: c.tags,
+      })),
+    });
+  } catch (err: any) {
+    console.error("Error fetching shared brain:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
-);
+});
 
 app.post(
   "/api/v1/upload-pdf",
