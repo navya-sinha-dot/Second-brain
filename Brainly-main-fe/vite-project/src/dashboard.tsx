@@ -31,7 +31,7 @@ export function Dashboard() {
         { headers: { token: localStorage.getItem("token") } }
       );
 
-      const shareUrl = `https://brain-be.navyasinha.xyz/share/${response.data.hash}`;
+      const shareUrl = `https://brain.navyasinha.xyz/share/${response.data.hash}`;
       await navigator.clipboard.writeText(shareUrl);
       alert(`Share URL copied to clipboard: ${shareUrl}`);
     } catch (error) {
