@@ -104,7 +104,7 @@ export function Dashboard() {
 
         <div className="flex-1 overflow-auto bg-gray-50">
           <div className="max-w-7xl mx-auto px-8 py-8">
-            {/* {sharedLinks.length > 0 && (
+            {sharedLinks.length > 0 && (
               <div className="mb-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <ShareIcon />
@@ -138,7 +138,7 @@ export function Dashboard() {
                   ))}
                 </div>
               </div>
-            )} */}
+            )}
 
             {contents ? (
               contents.length > 0 ? (
