@@ -3,7 +3,7 @@ import { PlusIcon } from "./Icons/Plusicon";
 import { ShareIcon } from "./Icons/ShareIcon";
 import { Card } from "./components/Card";
 import { CreateContentModal } from "./components/CreateContentModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { useContent } from "./hooks/useContent";
 import { BACKEND_URL } from "./config";
@@ -13,9 +13,24 @@ import { useNavigate } from "react-router-dom";
 export function Dashboard() {
   const [modal, setModalOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [sharedLinks, setSharedLinks] = useState<{ hash: string }[]>([]);
   const navigate = useNavigate();
-
   const [contents, setContents] = useContent();
+
+  useEffect(() => {
+    const fetchSharedLinks = async () => {
+      try {
+        const res = await axios.get(`${BACKEND_URL}/api/v1/brain/share/links`, {
+          headers: { token: localStorage.getItem("token") },
+        });
+        setSharedLinks(res.data.links);
+      } catch (err) {
+        console.error("Failed to fetch shared links");
+      }
+    };
+
+    fetchSharedLinks();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -43,9 +58,29 @@ export function Dashboard() {
 
   return (
     <div className="flex">
-      <div className="border-gray-2">
+      <div className="border-gray-2 p-4 w-64">
         <Sidebar />
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-2">Public Links</h2>
+          {sharedLinks.length === 0 ? (
+            <p className="text-gray-500 text-sm">No public links shared yet.</p>
+          ) : (
+            <ul className="list-disc list-inside space-y-1">
+              {sharedLinks.map(({ hash }) => (
+                <li key={hash}>
+                  <button
+                    onClick={() => navigate(`/share/${hash}`)}
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    https://brain.navyasinha.xyz/share/{hash}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
+
       <div className="bg-gradient-to-l from-white to-blue-50 min-h-screen p-4 w-full">
         <CreateContentModal
           contents={contents}

@@ -43,11 +43,7 @@ export default function SharePage() {
       </div>
     );
 
-  const contentArray = data?.content?.length
-    ? data.content
-    : data?.content
-    ? [data.content]
-    : [];
+  const contentArray = data?.content?.length ? data.content : [];
 
   return (
     <div className="flex">

@@ -195,7 +195,8 @@ app.get("/api/v1/brain/:sharelink", async (req, res) => {
     // Respond with username + all content items
     res.json({
       username: user?.name || "Unknown User",
-      contents: contents.map((c) => ({
+      content: contents.map((c) => ({
+        _id: c._id,
         title: c.title,
         type: c.type,
         link: c.link,
@@ -207,6 +208,19 @@ app.get("/api/v1/brain/:sharelink", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+app.get(
+  "/api/v1/brain/share/links",
+  auth,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const links = await LinkModel.find({ userId: req.userId });
+      res.json({ links });
+    } catch (err) {
+      res.status(500).json({ message: "Error fetching links" });
+    }
+  }
+);
 
 app.post(
   "/api/v1/upload-pdf",
