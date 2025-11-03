@@ -51,10 +51,12 @@ export default function SharePage() {
 
   return (
     <div className="flex">
+      {/* Sidebar */}
       <div className="border-gray-2">
         <Sidebar />
       </div>
 
+      {/* Main Area */}
       <div className="bg-gradient-to-l from-white to-blue-50 min-h-screen p-4 w-full">
         <div className="flex justify-between items-center pt-4">
           <h1 className="text-3xl font-bold text-gray-800">
