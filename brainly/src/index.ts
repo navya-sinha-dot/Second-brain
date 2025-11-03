@@ -178,6 +178,7 @@ app.get("/api/v1/brain/:sharelink", async (req, res) => {
       return;
     }
 
+    // Fetch all content belonging to the linked user
     const contents = await ContentModel.find({ userId: link.userId });
     const user = await UserModel.findOne({ _id: link.userId });
 
@@ -191,6 +192,7 @@ app.get("/api/v1/brain/:sharelink", async (req, res) => {
       return;
     }
 
+    // Respond with username + all content items
     res.json({
       username: user?.name || "Unknown User",
       contents: contents.map((c) => ({

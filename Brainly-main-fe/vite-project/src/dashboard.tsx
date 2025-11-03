@@ -25,16 +25,16 @@ export function Dashboard() {
   const handleShare = async () => {
     setIsSharing(true);
     try {
-      const response = await axios.post(
+      const { data } = await axios.post(
         `${BACKEND_URL}/api/v1/brain/share`,
         { share: true },
         { headers: { token: localStorage.getItem("token") } }
       );
 
-      const shareUrl = `https://brain.navyasinha.xyz/share/${response.data.hash}`;
+      const shareUrl = `https://brain.navyasinha.xyz/share/${data.hash}`;
       await navigator.clipboard.writeText(shareUrl);
       alert(`Share URL copied to clipboard: ${shareUrl}`);
-    } catch (error) {
+    } catch {
       alert("Failed to share brain. Please try again.");
     } finally {
       setIsSharing(false);
