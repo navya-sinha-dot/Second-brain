@@ -7,7 +7,7 @@ interface CardProps {
   title: string;
   link: string;
   type: "PDF" | "Youtube";
-  onDeleteClick: (id: string, title: string) => void;
+  onDeleteClick?: (id: string, title: string) => void;
 }
 
 export function Card({ id, title, link, type, onDeleteClick }: CardProps) {
@@ -28,13 +28,15 @@ export function Card({ id, title, link, type, onDeleteClick }: CardProps) {
         </div>
 
         <div className="flex">
-          <button
-            onClick={() => onDeleteClick(id, title)}
-            className="pr-3 text-blue-600 hover:text-red-500 transition-colors"
-            title="Delete"
-          >
-            <DustbinIcon />
-          </button>
+          {onDeleteClick && (
+            <button
+              onClick={() => onDeleteClick(id, title)}
+              className="pr-3 text-blue-600 hover:text-red-500 transition-colors"
+              title="Delete"
+            >
+              <DustbinIcon />
+            </button>
+          )}
 
           <div className="text-blue-600">
             <a href={link} target="_blank" rel="noopener noreferrer">

@@ -72,7 +72,7 @@ export default function SharePage() {
                 title={item.title}
                 link={item.link}
                 type={item.type}
-                onDelete={() => {}}
+                onDeleteClick={undefined}
               />
             ))
           ) : (
