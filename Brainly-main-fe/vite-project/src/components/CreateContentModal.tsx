@@ -13,13 +13,11 @@ enum ContentType {
 export function CreateContentModal({
   open,
   onClose,
-  contents,
-  setContents,
+  refresh,
 }: {
   open: boolean;
   onClose: () => void;
-  contents: any[];
-  setContents: (contents: any[]) => void;
+  refresh: () => void;
 }) {
   const titleRef = useRef<HTMLInputElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
@@ -55,8 +53,6 @@ export function CreateContentModal({
             headers: { token: localStorage.getItem("token") || "" },
           }
         );
-
-        setContents([...contents, { title, link, type }]);
       } else {
         if (!file) {
           alert("Please select a PDF file.");
@@ -95,11 +91,10 @@ export function CreateContentModal({
           }
         );
 
-        setContents([...contents, { title, link: uploadedUrl, type }]);
-
         window.open(uploadedUrl, "_blank");
       }
 
+      refresh();
       onClose();
     } catch (err: any) {
       console.error("Upload error:", err.response?.data || err.message);

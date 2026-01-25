@@ -9,13 +9,20 @@ import { useContent } from "./hooks/useContent";
 import { BACKEND_URL } from "./config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { DeleteConfirmationModal } from "./components/DeleteConfirmationModal";
 
 export function Dashboard() {
   const [modal, setModalOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [sharedLinks, setSharedLinks] = useState<{ hash: string }[]>([]);
   const navigate = useNavigate();
-  const [contents, setContents] = useContent();
+  const { content: contents, setContent: setContents, refresh } = useContent();
+
+  // State to manage the delete confirmation modal centrally
+  const [deleteConfig, setDeleteConfig] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchSharedLinks = async () => {
@@ -56,6 +63,30 @@ export function Dashboard() {
     }
   };
 
+  const confirmDelete = async () => {
+    if (!deleteConfig || !deleteConfig.id) {
+      alert("Invalid content ID. Please refresh and try again.");
+      setDeleteConfig(null);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await axios.delete(`${BACKEND_URL}/api/v1/content/${deleteConfig.id}`, {
+        headers: { token },
+      });
+
+      setContents((prev) => prev.filter((c) => c._id !== deleteConfig.id));
+      setDeleteConfig(null);
+    } catch (error) {
+      console.error("Failed to delete content", error);
+      alert("Failed to delete content. Please try again.");
+      setDeleteConfig(null);
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-full">
       <div className="border-gray-200 w-64 flex-shrink-0">
@@ -63,12 +94,19 @@ export function Dashboard() {
       </div>
       <div className="flex-1 flex flex-col">
         <CreateContentModal
-          contents={contents}
-          setContents={setContents}
+          refresh={refresh}
           open={modal}
           onClose={() => {
             setModalOpen(false);
           }}
+        />
+
+        {/* Central Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={!!deleteConfig}
+          onClose={() => setDeleteConfig(null)}
+          onConfirm={confirmDelete}
+          title={deleteConfig?.title || ""}
         />
 
         <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10">
@@ -150,10 +188,8 @@ export function Dashboard() {
                       title={item.title}
                       link={item.link}
                       type={item.type}
-                      onDelete={(deletedId) =>
-                        setContents((prev) =>
-                          prev.filter((c) => c._id !== deletedId)
-                        )
+                      onDeleteClick={(id, title) =>
+                        setDeleteConfig({ id, title })
                       }
                     />
                   ))}

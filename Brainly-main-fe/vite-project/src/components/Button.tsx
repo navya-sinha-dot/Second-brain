@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 
 interface Buttonprops {
-  variants: "primary" | "secondary";
+  variants: "primary" | "secondary" | "danger";
   startIcon?: ReactElement;
   innertext: string;
   onClick?: () => void;
@@ -12,6 +12,7 @@ interface Buttonprops {
 const variantStyles = {
   primary: "bg-blue-600 hover:bg-blue-700 text-white",
   secondary: "bg-blue-100 text-blue-700 hover:bg-blue-200",
+  danger: "bg-red-600 hover:bg-red-700 text-white",
 };
 
 const defaultStyles =
@@ -29,9 +30,8 @@ export function Button({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${variantStyles[variants]} ${defaultStyles} ${
-        disabled ? "opacity-50 cursor-not-allowed" : ""
-      } ${className}`}
+      className={`${variantStyles[variants]} ${defaultStyles} ${disabled ? "opacity-50 cursor-not-allowed" : ""
+        } ${className}`}
     >
       <div className="pr-2 ">{startIcon}</div>
       {innertext}
