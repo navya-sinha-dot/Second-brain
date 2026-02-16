@@ -10,6 +10,7 @@ export default function SharePage() {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchSharedBrain = async () => {
@@ -43,12 +44,16 @@ export default function SharePage() {
       </div>
     );
 
-  const contentArray = data?.content?.length ? data.content : [];
+  const allContent = data?.content || [];
+  const filteredContent = allContent.filter((item: any) => {
+    if (filter === "all") return true;
+    return item.type === filter;
+  });
 
   return (
     <div className="flex bg-neo-bg min-h-screen">
       <div className="w-64 flex-shrink-0">
-        <Sidebar />
+        <Sidebar activeFilter={filter} onFilter={setFilter} />
       </div>
       <div className="flex-1 flex flex-col">
         <div className="bg-neo-white neo-border border-l-0 border-r-0 border-t-0 px-8 py-5 sticky top-0 z-10 shadow-neo">
@@ -61,8 +66,8 @@ export default function SharePage() {
 
         <div className="flex-1 overflow-auto p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {contentArray.length > 0 ? (
-              contentArray.map((item: any) => (
+            {filteredContent.length > 0 ? (
+              filteredContent.map((item: any) => (
                 <Card
                   key={item._id}
                   id={item._id}
@@ -75,7 +80,7 @@ export default function SharePage() {
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-20">
                 <div className="text-black font-black uppercase tracking-tighter text-2xl">
-                  No content shared yet.
+                  {filter === "all" ? "No content shared yet." : `No ${filter}s found.`}
                 </div>
               </div>
             )}
