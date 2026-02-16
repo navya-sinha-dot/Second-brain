@@ -29,8 +29,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full bg-gradient-to-r from-slate-200 to-purple-400 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="h-screen w-full bg-neo-bg flex items-center justify-center">
+        <div className="animate-spin h-12 w-12 neo-border border-t-neo-blue"></div>
       </div>
     );
   }

@@ -1,5 +1,5 @@
 interface InputPorps {
-  type?:string
+  type?: string
   reference?: any;
   placeholder: string;
 }
@@ -11,7 +11,7 @@ export function Input({ reference, placeholder, type = "text" }: InputPorps) {
         type={type}
         ref={reference}
         placeholder={placeholder}
-        className="p-4 m-2 rounded-md border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-blue-400"></input>
+        className="p-4 m-2 neo-border bg-white focus:outline-none focus:bg-neo-yellow transition-colors placeholder:text-black/50 font-bold tracking-tight text-sm w-full"></input>
     </div>
   );
 }

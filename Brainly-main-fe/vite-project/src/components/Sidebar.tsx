@@ -1,21 +1,38 @@
 import { BrainIcon } from "../Icons/BrainIcon";
-import { TwitterIcon } from "../Icons/TwitterIcon";
+import { DocumentIcon } from "../Icons/DocumentIcon";
 import { YoutubeIcon } from "../Icons/Youtubeicon";
 import { SidebarComponents } from "./SidebarComponent";
 
-export function Sidebar() {
+export function Sidebar({ onFilter, activeFilter }: { onFilter: (type: string) => void, activeFilter: string }) {
   return (
-    <div className="h-screen bg-gradient-to-b from-white to-blue-50 border-r w-72 position-fixed left-0 top-0 pl-4">
-      <h1 className="font-bold text-2xl flex items-center pt-4 ">
-        <div className="pr-2 text-blue-600">{<BrainIcon />}</div>SECOND BRAIN
-      </h1>
-      <div className="pt-4">
-        <div className="pb-4 cursor-pointer">
-          <SidebarComponents text="PDF" icon={<TwitterIcon />} />
+    <div className="h-screen bg-neo-white neo-border border-l-0 border-t-0 border-b-0 w-64 fixed left-0 top-0 p-6 flex flex-col gap-8 shadow-neo">
+      <div className="flex items-center gap-2">
+        <div className="p-2 neo-border bg-neo-yellow">
+          <BrainIcon />
         </div>
-        <div className="pb-4 cursor-pointer">
-          <SidebarComponents text="Youtube" icon={<YoutubeIcon />} />
-        </div>
+        <h1 className="font-black text-xl tracking-tighter uppercase whitespace-nowrap pr-3">
+          Second Brain
+        </h1>
+      </div>
+      <div className="flex flex-col gap-2">
+        <SidebarComponents
+          text="All Brains"
+          icon={<BrainIcon />}
+          active={activeFilter === "all"}
+          onClick={() => onFilter("all")}
+        />
+        <SidebarComponents
+          text="Documents"
+          icon={<DocumentIcon />}
+          active={activeFilter === "PDF"}
+          onClick={() => onFilter("PDF")}
+        />
+        <SidebarComponents
+          text="YouTube"
+          icon={<YoutubeIcon />}
+          active={activeFilter === "Youtube"}
+          onClick={() => onFilter("Youtube")}
+        />
       </div>
     </div>
   );

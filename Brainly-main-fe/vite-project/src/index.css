@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+@theme {
+  --color-neo-pink: #E8DAD7;
+  --color-neo-blue: #B8A8A5;
+  --color-neo-green: #C9B2AE;
+  --color-neo-yellow: #EEE2E0;
+  --color-neo-orange: #9C837F;
+  --color-neo-white: #F9F6F5;
+  --color-neo-bg: #D6C8C5;
+
+  --shadow-neo: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  --shadow-neo-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+}
+
+@layer base {
+  body {
+    @apply bg-neo-bg text-black font-sans;
+  }
+}
+
+@utility neo-border {
+  @apply border-2 border-black;
+}
+
+@utility neo-shadow {
+  @apply shadow-neo;
+}
+
+@utility neo-btn {
+  @apply neo-border neo-shadow transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+}
+
+@utility neo-card {
+  @apply neo-border neo-shadow bg-white p-4;
+}

@@ -10,13 +10,13 @@ interface Buttonprops {
 }
 
 const variantStyles = {
-  primary: "bg-blue-600 hover:bg-blue-700 text-white",
-  secondary: "bg-blue-100 text-blue-700 hover:bg-blue-200",
-  danger: "bg-red-600 hover:bg-red-700 text-white",
+  primary: "bg-neo-blue text-black",
+  secondary: "bg-neo-white text-black",
+  danger: "bg-neo-orange text-white",
 };
 
 const defaultStyles =
-  "px-4 py-2 rounded-xl font-normal flex items-center cursor-pointer";
+  "px-6 py-2 neo-btn font-bold flex items-center justify-center cursor-pointer uppercase tracking-tight text-sm";
 
 export function Button({
   variants,
@@ -33,7 +33,7 @@ export function Button({
       className={`${variantStyles[variants]} ${defaultStyles} ${disabled ? "opacity-50 cursor-not-allowed" : ""
         } ${className}`}
     >
-      <div className="pr-2 ">{startIcon}</div>
+      {startIcon && <div className="pr-2">{startIcon}</div>}
       {innertext}
     </button>
   );

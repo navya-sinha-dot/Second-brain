@@ -109,40 +109,38 @@ export function CreateContentModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-700/40 backdrop-blur-sm px-4">
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg p-8 sm:p-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-4">
+      <div className="relative bg-neo-white neo-border shadow-neo-lg w-full max-w-md sm:max-w-lg p-8 sm:p-10">
         <button
           aria-label="Close"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition"
+          className="absolute top-4 right-4 p-2 hover:bg-neo-blue neo-border border-transparent hover:border-black transition-all"
         >
           <CrossIcon />
         </button>
 
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-          Add New Content
+        <h2 className="text-3xl font-black text-black mb-8 text-center uppercase tracking-tighter">
+          Add New Brain
         </h2>
 
-        <div className="flex flex-col items-center">
-          <div className="max-w-sm">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-full">
             <Input placeholder="Title" reference={titleRef} />
           </div>
 
-          <div className="max-w-sm">
+          <div className="w-full">
             {type === ContentType.Youtube ? (
               <Input placeholder="YouTube Link" reference={linkRef} />
             ) : (
               <div className="space-y-3 w-full">
                 <div
                   onClick={openFileDialog}
-                  className="cursor-pointer rounded-xl border border-dashed border-gray-300 py-3 px-4 bg-white hover:bg-gray-50 transition text-gray-700 text-sm text-center"
+                  className="cursor-pointer neo-border border-dashed py-4 px-4 bg-white hover:bg-neo-green transition-colors text-black font-bold text-sm text-center uppercase tracking-tight"
                 >
                   {file ? (
-                    <span className="font-medium">{file.name}</span>
+                    <span>{file.name}</span>
                   ) : (
-                    <span className="text-gray-400">
-                      Select a PDF from your computer
-                    </span>
+                    <span>Select PDF File</span>
                   )}
                 </div>
 
@@ -167,37 +165,36 @@ export function CreateContentModal({
                   <iframe
                     src={previewUrl}
                     title="PDF Preview"
-                    className="w-full h-64 border rounded-lg"
+                    className="w-full h-64 neo-border"
                   />
                 )}
-
-                <p className="text-xs text-gray-400 text-center">
-                  Only PDF files are allowed. Click the preview to view.
-                </p>
               </div>
             )}
           </div>
 
-          <div className="flex justify-center gap-4 pt-3">
+          <div className="flex justify-center gap-4 w-full">
             <Button
               variants={type === ContentType.Youtube ? "primary" : "secondary"}
-              innertext="YouTube"
+              innertext="YouTube Mode"
               onClick={() => setType(ContentType.Youtube)}
+              className="flex-1"
             />
             <Button
               variants={type === ContentType.PDF ? "primary" : "secondary"}
-              innertext="PDF"
+              innertext="PDF Mode"
               onClick={() => setType(ContentType.PDF)}
+              className="flex-1"
             />
           </div>
         </div>
 
-        <div className="flex justify-center mt-5">
+        <div className="flex justify-center mt-10">
           <Button
             variants="primary"
-            innertext={isLoading ? "Submitting..." : "Submit"}
+            innertext={isLoading ? "Adding..." : "Add Content"}
             onClick={addContent}
             disabled={isLoading}
+            className="w-full bg-neo-green py-4 text-lg"
           />
         </div>
       </div>
