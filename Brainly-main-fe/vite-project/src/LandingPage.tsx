@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "./components/Button";
 import { BrainIcon } from "./Icons/BrainIcon";
 import { useState } from "react";
-import Illustration2 from "./assets/Illustration2.png";
+import Illustration2 from "./assets/illustration2.png";
 
 export function LandingPage() {
   const navigate = useNavigate();
