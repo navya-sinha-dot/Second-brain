@@ -1,4 +1,4 @@
-import { Brain, GraduationCap, Layout, FileText, Youtube } from "lucide-react";
+import { Brain, GraduationCap, FileText, Youtube } from "lucide-react";
 import { SidebarComponents } from "./SidebarComponent";
 
 export function Sidebar({ onFilter, activeFilter }: { onFilter: (type: string) => void, activeFilter: string }) {

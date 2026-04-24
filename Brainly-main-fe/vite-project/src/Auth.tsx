@@ -69,7 +69,7 @@ export function Signup() {
         <div className="relative z-10 max-w-lg">
           <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">
             Elevate your <br />
-            <span className="textblue">digital wisdom.</span>
+            <span className="text-neo-blue">digital wisdom.</span>
           </h2>
           <p className="text-xl text-blue-100 font-medium leading-relaxed">
             Join thousands of thinkers who organize their life's knowledge with Second Brain.

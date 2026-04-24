@@ -175,7 +175,7 @@ export function Dashboard() {
                     <button
                       key={hash}
                       onClick={() => navigate(`/share/${hash}`)}
-                      className="neo-btn bg-blue-50 text-neo-blue border border-blue-100/50 px-4 py-2 text-sm font-semibold"
+                      className="neo-btn bg-neo-light-blue text-neo-blue border border-gray-100/50 px-4 py-2 text-sm font-semibold"
                       title={`https://brain.navyasinha.xyz/share/${hash}`}
                     >
                       share/{hash}
@@ -203,7 +203,7 @@ export function Dashboard() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <div className="p-8 neo-card bg-blue-50/50 mb-6 group transition-all">
+                  <div className="p-8 neo-card bg-neo-light-blue mb-6 group transition-all">
                     <svg
                       className="w-16 h-16 text-neo-blue group-hover:scale-110 transition-transform"
                       fill="none"

@@ -23,7 +23,6 @@ export function CreateContentModal({
   const linkRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<ContentType>(ContentType.Youtube);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!open) return null;
@@ -130,22 +129,20 @@ export function CreateContentModal({
           <div className="flex bg-gray-50 p-1.5 rounded-2xl border border-gray-100/50">
             <button
               onClick={() => setType(ContentType.Youtube)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-semibold text-sm ${
-                type === ContentType.Youtube 
-                  ? "bg-white text-neo-blue shadow-sm" 
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-semibold text-sm ${type === ContentType.Youtube
+                  ? "bg-white text-neo-blue shadow-sm"
                   : "text-neo-gray hover:text-neo-blue"
-              }`}
+                }`}
             >
               <Youtube size={18} />
               YouTube
             </button>
             <button
               onClick={() => setType(ContentType.PDF)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-semibold text-sm ${
-                type === ContentType.PDF 
-                  ? "bg-white text-neo-blue shadow-sm" 
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-semibold text-sm ${type === ContentType.PDF
+                  ? "bg-white text-neo-blue shadow-sm"
                   : "text-neo-gray hover:text-neo-blue"
-              }`}
+                }`}
             >
               <FileText size={18} />
               PDF Document
@@ -172,10 +169,10 @@ export function CreateContentModal({
                     className="cursor-pointer border-2 border-dashed border-gray-100 rounded-2xl py-8 px-4 bg-gray-50 hover:bg-neo-light-blue/50 hover:border-neo-blue/20 transition-all text-center group"
                   >
                     <div className="flex flex-col items-center gap-2">
-                       <div className="p-3 bg-white rounded-full shadow-sm text-neo-blue group-hover:scale-110 transition-all">
-                          <Plus size={20} />
-                       </div>
-                       {file ? (
+                      <div className="p-3 bg-white rounded-full shadow-sm text-neo-blue group-hover:scale-110 transition-all">
+                        <Plus size={20} />
+                      </div>
+                      {file ? (
                         <span className="font-bold text-neo-text text-sm">{file.name}</span>
                       ) : (
                         <div>
@@ -194,12 +191,6 @@ export function CreateContentModal({
                     onChange={(e) => {
                       const selected = e.target.files?.[0] ?? null;
                       setFile(selected);
-                      if (selected) {
-                        const url = URL.createObjectURL(selected);
-                        setPreviewUrl(url);
-                      } else {
-                        setPreviewUrl(null);
-                      }
                     }}
                   />
                 </div>
