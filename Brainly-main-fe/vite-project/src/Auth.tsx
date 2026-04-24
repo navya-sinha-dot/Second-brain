@@ -27,89 +27,112 @@ export function Signup() {
 
       if (!name || !email || !password) {
         setError("Please fill in all fields");
+        setIsLoading(false);
         return;
       }
 
-      const response = await axios.post(BACKEND_URL + "/api/v1/signup", {
+      await axios.post(BACKEND_URL + "/api/v1/signup", {
         email,
         name,
         password,
       });
 
-      const message: string | undefined = response?.data?.message;
-      if (message && message.toLowerCase().includes("signed up")) {
-        setSuccess("Account created successfully! Redirecting to sign in...");
-        setTimeout(() => {
-          navigate("/signin");
-        }, 1500);
-      } else if (message) {
-        setError(message);
-      } else {
-        setError("Unexpected response from server. Please try again.");
-      }
+      setSuccess("Account created successfully!");
+      setTimeout(() => navigate("/signin"), 1500);
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Sign up failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Sign up failed");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="h-screen w-full bg-neo-bg flex flex-col items-center justify-center p-4 overflow-auto">
-      <button
-        onClick={() => navigate("/")}
-        className="flex items-center text-black hover:bg-neo-blue p-2 neo-border mb-6 font-black transition-all uppercase tracking-tighter text-sm neo-shadow active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Home
-      </button>
+    <div className="min-h-screen w-full bg-white flex">
+      {/* Left side - Visual/Info */}
+      <div className="hidden lg:flex flex-1 bg-neo-dark-blue p-12 flex-col justify-between relative overflow-hidden">
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-blue-600/20 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-indigo-600/10 blur-[100px] rounded-full"></div>
 
-      <div className="bg-neo-white neo-border p-10 w-full max-w-md shadow-neo-lg text-center my-auto">
-        <h2 className="text-4xl font-black text-black mb-6 uppercase tracking-tighter">
-          Join Us
-        </h2>
-
-        {error && (
-          <div className="bg-red-400 neo-border text-black font-bold p-3 mb-6 uppercase text-sm tracking-tight">
-            {error}
+        <div className="relative z-10">
+          <div
+            onClick={() => navigate("/")}
+            className="flex items-center gap-3 cursor-pointer group w-fit"
+          >
+            <div className="text-white group-hover:scale-110 transition-transform">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <span className="text-xl font-black text-white uppercase tracking-widest">Second Brain</span>
           </div>
-        )}
-
-        {success && (
-          <div className="bg-neo-green neo-border text-black font-bold p-3 mb-6 uppercase text-sm tracking-tight">
-            {success}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2 mb-6">
-          <Input placeholder="Name" reference={nameRef} />
-          <Input placeholder="Email" reference={emailRef} />
-          <Input placeholder="Password" type="password" reference={passwordRef} />
         </div>
 
-        <div className="mt-4 mb-8">
-          <div className="flex justify-center items-center">
+        <div className="relative z-10 max-w-lg">
+          <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">
+            Elevate your <br />
+            <span className="textblue">digital wisdom.</span>
+          </h2>
+          <p className="text-xl text-blue-100 font-medium leading-relaxed">
+            Join thousands of thinkers who organize their life's knowledge with Second Brain.
+          </p>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 flex flex-col justify-center items-center p-8 bg-slate-50/30">
+        <div className="w-full max-w-md space-y-10">
+          <div className="space-y-4">
+            <h1 className="text-4xl font-black text-neo-dark-blue uppercase tracking-tight">Create Account</h1>
+            <p className="text-neo-gray font-medium">Start your journey towards a more organized life.</p>
+          </div>
+
+          <div className="space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-500 text-sm font-bold p-4 rounded-2xl border border-red-100 animate-shake">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="bg-blue-50 text-blue-600 text-sm font-bold p-4 rounded-2xl border border-blue-100">
+                {success}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-neo-gray/60 uppercase tracking-widest ml-1">Full Name</label>
+                <Input placeholder="Enter your name" reference={nameRef} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-neo-gray/60 uppercase tracking-widest ml-1">Email Address</label>
+                <Input placeholder="name@company.com" reference={emailRef} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-neo-gray/60 uppercase tracking-widest ml-1">Password</label>
+                <Input placeholder="••••••••" type="password" reference={passwordRef} />
+              </div>
+            </div>
+
             <Button
               variants="primary"
-              innertext={isLoading ? "Creating Account..." : "Sign Up"}
+              innertext={isLoading ? "Creating account..." : "Sign Up"}
               onClick={signup}
               disabled={isLoading}
-              className="w-full py-4 text-lg"
+              className="w-full py-4 text-base shadow-xl shadow-blue-100"
             />
           </div>
-        </div>
 
-        <p className="text-black font-bold uppercase tracking-tight text-sm">
-          Already have an account?{" "}
-          <button
-            onClick={() => navigate("/signin")}
-            className="text-black hover:bg-neo-yellow px-1 neo-border border-transparent hover:border-black transition-all underline decoration-2 underline-offset-4"
-          >
-            Sign in
-          </button>
-        </p>
+          <p className="text-center text-sm font-medium text-neo-gray">
+            Already have an account?{" "}
+            <button
+              onClick={() => navigate("/signin")}
+              className="text-neo-blue font-bold hover:underline"
+            >
+              Sign in
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

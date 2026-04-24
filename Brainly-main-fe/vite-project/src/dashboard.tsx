@@ -10,7 +10,7 @@ import { BACKEND_URL } from "./config";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { DeleteConfirmationModal } from "./components/DeleteConfirmationModal";
-import { Menu } from "lucide-react";
+import { Menu, LogOut, Share2 } from "lucide-react";
 
 export function Dashboard() {
   const [modal, setModalOpen] = useState(false);
@@ -96,7 +96,6 @@ export function Dashboard() {
 
   return (
     <div className="flex min-h-screen w-full bg-neo-bg overflow-x-hidden">
-      {/* Sidebar - Movable/Collapsible */}
       <div
         className={`fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out ${isSidebarVisible ? "translate-x-0" : "-translate-x-64"
           }`}
@@ -123,21 +122,21 @@ export function Dashboard() {
           title={deleteConfig?.title || ""}
         />
 
-        <div className="bg-neo-white neo-border border-l-0 border-r-0 border-t-0 px-8 py-5 sticky top-0 z-10 shadow-neo">
-          <div className="flex justify-between items-center">
+        <div className="bg-white border-b border-gray-100 px-8 py-4 sticky top-0 z-10">
+          <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setIsSidebarVisible(!isSidebarVisible)}
-                className="p-3 neo-border bg-neo-white hover:bg-neo-yellow transition-all shadow-neo active:translate-x-[2px] active:translate-y-[2px]"
+                className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-neo-gray"
                 title={isSidebarVisible ? "Collapse Sidebar" : "Expand Sidebar"}
               >
-                <Menu size={24} />
+                <Menu size={20} />
               </button>
-              <h1 className="text-3xl font-black text-black uppercase tracking-tighter hidden sm:block">
+              <h1 className="text-3xl font-black text-neo-dark-blue hidden sm:block uppercase tracking-tight">
                 My Second Brain
               </h1>
             </div>
-            <div className="flex gap-4">
+            <div className="flex items-center gap-3">
               <Button
                 onClick={() => {
                   setModalOpen(true);
@@ -148,26 +147,28 @@ export function Dashboard() {
               />
               <Button
                 variants="secondary"
-                innertext={isSharing ? "Sharing..." : "Share Brain"}
+                innertext={isSharing ? "Sharing..." : "Share"}
                 onClick={handleShare}
-                startIcon={<ShareIcon />}
+                startIcon={<Share2 size={18} />}
                 disabled={isSharing}
               />
-              <Button
-                variants="danger"
-                innertext="Logout"
+              <button 
                 onClick={handleLogout}
-              />
+                className="flex items-center gap-2 text-neo-gray hover:text-neo-blue font-medium text-sm px-4 py-2 transition-colors"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto bg-neo-bg">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="flex-1 overflow-auto bg-slate-50/50">
+          <div className="max-w-7xl mx-auto px-8 py-10">
             {sharedLinks.length > 0 && filter === "all" && (
-              <div className="mb-8 neo-card bg-neo-white">
-                <h2 className="text-xl font-black text-black mb-4 flex items-center gap-2 uppercase tracking-tighter">
-                  <ShareIcon />
+              <div className="mb-8 neo-card">
+                <h2 className="text-xl font-bold text-neo-dark-blue mb-4 flex items-center gap-2 font-serif italic">
+                  <Share2 size={20} />
                   Public Shared Links
                 </h2>
                 <div className="flex flex-wrap gap-4">
@@ -175,7 +176,7 @@ export function Dashboard() {
                     <button
                       key={hash}
                       onClick={() => navigate(`/share/${hash}`)}
-                      className="neo-btn bg-neo-pink px-4 py-2 text-sm font-bold uppercase tracking-tight"
+                      className="neo-btn bg-blue-50 text-neo-blue border border-blue-100/50 px-4 py-2 text-sm font-semibold"
                       title={`https://brain.navyasinha.xyz/share/${hash}`}
                     >
                       share/{hash}
@@ -203,9 +204,9 @@ export function Dashboard() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <div className="p-8 neo-card bg-neo-yellow mb-6 rotate-2">
+                  <div className="p-8 neo-card bg-blue-50/50 mb-6 group transition-all">
                     <svg
-                      className="w-16 h-16 text-black"
+                      className="w-16 h-16 text-neo-blue group-hover:scale-110 transition-transform"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -213,21 +214,21 @@ export function Dashboard() {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={3}
+                        strokeWidth={2}
                         d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                       />
                     </svg>
                   </div>
-                  <h3 className="text-3xl font-black text-black mb-3 uppercase tracking-tighter">
+                  <h3 className="text-3xl font-serif text-neo-dark-blue mb-3 italic">
                     {filter === "all" ? "Empty Brain" : `No ${filter}s Found`}
                   </h3>
-                  <p className="text-lg font-bold text-black uppercase opacity-60">
+                  <p className="text-lg font-medium text-neo-gray">
                     {filter === "all" ? "Add your first content to get started" : `Try changing your filter or add a new ${filter}`}
                   </p>
                   {filter !== "all" && (
                     <button
                       onClick={() => setFilter("all")}
-                      className="mt-6 neo-btn bg-neo-blue px-6 py-2 font-black uppercase tracking-tight"
+                      className="mt-6 neo-btn bg-neo-blue text-white px-8 py-3 font-bold shadow-lg shadow-blue-100 hover:shadow-blue-200"
                     >
                       Show All
                     </button>

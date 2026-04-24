@@ -1,17 +1,18 @@
-interface InputPorps {
-  type?: string
+interface InputProps {
+  type?: string;
   reference?: any;
   placeholder: string;
 }
 
-export function Input({ reference, placeholder, type = "text" }: InputPorps) {
+export function Input({ reference, placeholder, type = "text" }: InputProps) {
   return (
-    <div>
+    <div className="w-full">
       <input
         type={type}
         ref={reference}
         placeholder={placeholder}
-        className="p-4 m-2 neo-border bg-white focus:outline-none focus:bg-neo-yellow transition-colors placeholder:text-black/50 font-bold tracking-tight text-sm w-full"></input>
+        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:bg-white focus:border-neo-blue/30 focus:ring-4 focus:ring-neo-blue/5 transition-all placeholder:text-neo-gray/50 font-medium text-sm"
+      />
     </div>
   );
 }

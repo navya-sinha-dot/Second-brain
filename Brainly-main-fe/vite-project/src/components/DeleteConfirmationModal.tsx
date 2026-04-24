@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Button } from "./Button";
-import { CrossIcon } from "../Icons/CrossIcon";
+import { X, AlertTriangle } from "lucide-react";
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -35,33 +35,33 @@ export function DeleteConfirmationModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md px-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
       onClick={onClose}
     >
       <div
-        className="relative bg-neo-white neo-border shadow-neo-lg w-full max-w-sm p-10"
+        className="relative bg-white rounded-[32px] shadow-neo-xl w-full max-w-sm p-10 border border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 neo-border border-transparent hover:border-black hover:bg-neo-blue transition-all"
+          className="absolute top-6 right-6 p-2 text-neo-gray/50 hover:text-neo-text hover:bg-gray-50 rounded-full transition-all"
           aria-label="Close"
         >
-          <CrossIcon />
+          <X size={20} />
         </button>
 
         <div className="flex flex-col items-center">
-          <div className="flex items-center justify-center h-20 w-20 neo-border bg-neo-yellow mb-8 rotate-3">
-            <span className="text-black font-black text-4xl">!</span>
+          <div className="flex items-center justify-center h-20 w-20 bg-neo-orange/10 text-neo-orange rounded-3xl mb-8">
+            <AlertTriangle size={40} />
           </div>
 
-          <h3 className="text-3xl font-black text-black mb-4 uppercase tracking-tighter">
+          <h3 className="text-2xl font-bold text-neo-text mb-3">
             Confirm Delete
           </h3>
-          <p className="text-center font-bold text-black mb-10 leading-relaxed uppercase tracking-tight text-sm">
+          <p className="text-center text-neo-gray mb-10 leading-relaxed font-medium">
             Are you sure you want to delete <br />
-            <span className="bg-neo-pink px-2">"{title}"</span>? <br />
-            This action is permanent.
+            <span className="font-bold text-neo-text">"{title}"</span>? <br />
+            This action cannot be undone.
           </p>
 
           <div className="flex gap-4 w-full">
@@ -69,13 +69,13 @@ export function DeleteConfirmationModal({
               variants="secondary"
               innertext="Cancel"
               onClick={onClose}
-              className="flex-1"
+              className="flex-1 !border-gray-200 !text-neo-gray hover:!bg-gray-50"
             />
             <Button
               variants="danger"
               innertext="Delete"
               onClick={onConfirm}
-              className="flex-1"
+              className="flex-1 shadow-lg shadow-red-200"
             />
           </div>
         </div>

@@ -14,11 +14,16 @@ export function SidebarComponents({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center gap-3 py-3 px-4 transition-all cursor-pointer group neo-border ${active ? "bg-neo-blue border-black" : "border-transparent hover:border-black hover:bg-neo-blue/50"
-        }`}
+      className={`flex items-center gap-3 py-3 px-4 rounded-xl transition-all cursor-pointer group ${
+        active 
+          ? "bg-neo-light-blue text-neo-blue" 
+          : "text-neo-gray hover:bg-gray-50 hover:text-neo-blue"
+      }`}
     >
-      <div className="text-black group-hover:scale-110 transition-transform">{icon} </div>
-      <div className="font-bold uppercase tracking-tight text-sm">{text}</div>
+      <div className={`transition-transform group-hover:scale-110 ${active ? "text-neo-blue" : "text-neo-gray group-hover:text-neo-blue"}`}>
+        {icon}
+      </div>
+      <div className="font-semibold text-sm">{text}</div>
     </div>
   );
 }

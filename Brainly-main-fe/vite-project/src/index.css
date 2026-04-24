@@ -1,26 +1,35 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
 @theme {
-  --color-neo-pink: #E8DAD7;
-  --color-neo-blue: #B8A8A5;
-  --color-neo-green: #C9B2AE;
-  --color-neo-yellow: #EEE2E0;
-  --color-neo-orange: #9C837F;
-  --color-neo-white: #F9F6F5;
-  --color-neo-bg: #D6C8C5;
+  --font-sans: "Outfit", sans-serif;
+  --font-serif: "Outfit", sans-serif;
 
-  --shadow-neo: 4px 4px 0px 0px rgba(0, 0, 0, 1);
-  --shadow-neo-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  --color-neo-blue: #0b2447;
+  --color-neo-light-blue: #eff6ff;
+  --color-neo-dark-blue: #1a2b3b;
+  --color-neo-white: #FFFFFF;
+  --color-neo-bg: #F8FAFC;
+  --color-neo-text: #1E293B;
+  --color-neo-gray: #64748B;
+  --color-neo-orange: #EF4444;
+
+  --shadow-neo: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-neo-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+  --shadow-neo-xl: 0 25px 50px -12px rgba(11, 36, 71, 0.15);
 }
 
 @layer base {
   body {
-    @apply bg-neo-bg text-black font-sans;
+    @apply bg-neo-bg text-neo-text font-sans antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-bold;
   }
 }
 
 @utility neo-border {
-  @apply border-2 border-black;
+  @apply border border-gray-200;
 }
 
 @utility neo-shadow {
@@ -28,9 +37,9 @@
 }
 
 @utility neo-btn {
-  @apply neo-border neo-shadow transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+  @apply rounded-full transition-all duration-300 active:scale-[0.98] disabled:opacity-50;
 }
 
 @utility neo-card {
-  @apply neo-border neo-shadow bg-white p-4;
+  @apply bg-white p-7 rounded-[40px] border border-gray-100/80 shadow-neo hover:shadow-neo-xl transition-all duration-300;
 }

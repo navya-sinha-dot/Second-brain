@@ -10,13 +10,13 @@ interface Buttonprops {
 }
 
 const variantStyles = {
-  primary: "bg-neo-blue text-black",
-  secondary: "bg-neo-white text-black",
-  danger: "bg-neo-orange text-white",
+  primary: "bg-neo-blue text-white hover:bg-[#1a3765] shadow-sm",
+  secondary: "bg-white text-neo-blue border border-neo-blue hover:bg-gray-50",
+  danger: "bg-neo-orange text-white hover:opacity-90",
 };
 
 const defaultStyles =
-  "px-6 py-2 neo-btn font-bold flex items-center justify-center cursor-pointer uppercase tracking-tight text-sm";
+  "px-6 py-2.5 neo-btn font-semibold flex items-center justify-center cursor-pointer transition-all duration-300 text-sm";
 
 export function Button({
   variants,
