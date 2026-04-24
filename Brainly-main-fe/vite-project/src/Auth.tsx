@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "./config";
-import { ArrowLeft } from "lucide-react";
 
 export function Signup() {
   const nameRef = useRef<HTMLInputElement>(null);

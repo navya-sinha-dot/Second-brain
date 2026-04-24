@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./components/Button";
-import { GraduationCap, ArrowRight, Play, CheckCircle2 } from "lucide-react";
+import { GraduationCap, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import Illustration2 from "./assets/image.png";
 
@@ -34,7 +34,7 @@ export function LandingPage() {
           </nav>
 
           <div className="hidden md:flex items-center gap-6">
-            <button 
+            <button
               onClick={() => navigate("/signin")}
               className="text-sm font-bold text-neo-gray hover:text-neo-blue uppercase tracking-widest"
             >

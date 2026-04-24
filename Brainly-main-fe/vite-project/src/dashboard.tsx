@@ -1,6 +1,5 @@
 import { Button } from "./components/Button";
 import { PlusIcon } from "./Icons/Plusicon";
-import { ShareIcon } from "./Icons/ShareIcon";
 import { Card } from "./components/Card";
 import { CreateContentModal } from "./components/CreateContentModal";
 import { useEffect, useState } from "react";
@@ -152,7 +151,7 @@ export function Dashboard() {
                 startIcon={<Share2 size={18} />}
                 disabled={isSharing}
               />
-              <button 
+              <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-neo-gray hover:text-neo-blue font-medium text-sm px-4 py-2 transition-colors"
               >
