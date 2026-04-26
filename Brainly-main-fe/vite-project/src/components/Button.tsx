@@ -10,8 +10,8 @@ interface Buttonprops {
 }
 
 const variantStyles = {
-  primary: "bg-neo-blue text-white hover:bg-[#1a3765] shadow-sm",
-  secondary: "bg-white text-neo-blue border border-neo-blue hover:bg-gray-50",
+  primary: "bg-neo-blue text-white hover:bg-[#153461] shadow-sm",
+  secondary: "bg-white text-neo-blue border border-neo-blue hover:bg-[#f0f4f8]",
   danger: "bg-neo-orange text-white hover:opacity-90",
 };
 

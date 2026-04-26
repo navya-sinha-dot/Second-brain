@@ -48,9 +48,9 @@ export function Signup() {
   return (
     <div className="min-h-screen w-full bg-white flex">
       {/* Left side - Visual/Info */}
-      <div className="hidden lg:flex flex-1 bg-neo-dark-blue p-12 flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-blue-600/20 blur-[120px] rounded-full"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-indigo-600/10 blur-[100px] rounded-full"></div>
+      <div className="hidden lg:flex flex-1 bg-neo-blue p-12 flex-col justify-between relative overflow-hidden">
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-white/5 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full"></div>
 
         <div className="relative z-10">
           <div
@@ -67,11 +67,11 @@ export function Signup() {
         </div>
 
         <div className="relative z-10 max-w-lg">
-          <h2 className="text-5xl font-bold text-white mb-6 leading-tight tracking-tight uppercase">
+          <h2 className="text-5xl font-bold text-blue-50 mb-6 leading-tight tracking-tight uppercase">
             Elevate your <br />
-            <span className="text-neo-blue">digital wisdom.</span>
+            <span className="text-white">digital wisdom.</span>
           </h2>
-          <p className="text-xl text-blue-100 font-medium leading-relaxed">
+          <p className="text-xl text-blue-100/80 font-medium leading-relaxed">
             Join thousands of thinkers who organize their life's knowledge with Second Brain.
           </p>
         </div>

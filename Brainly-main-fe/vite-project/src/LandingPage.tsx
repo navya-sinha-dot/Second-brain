@@ -181,13 +181,13 @@ export function LandingPage() {
                   variants="primary"
                   innertext="Get Started Free"
                   onClick={() => navigate("/signup")}
-                  className="px-10 py-7 text-lg bg-white text-neo-dark-blue hover:bg-gray-100 border-none shadow-lg"
+                  className="px-10 py-7 text-lg shadow-xl shadow-blue-900/10"
                 />
                 <Button
-                  variants="secondary"
+                  variants="primary"
                   innertext="Star on GitHub"
                   onClick={() => window.open("https://github.com/navya-sinha-dot/Second-brain", "_blank")}
-                  className="px-10 py-7 text-lg bg-transparent border-white/20 text-white hover:bg-white/10"
+                  className="px-10 py-7 text-lg bg-transparent border-white text-white hover:bg-white/10"
                 />
               </div>
             </div>

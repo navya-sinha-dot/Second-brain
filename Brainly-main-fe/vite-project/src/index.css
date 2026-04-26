@@ -7,7 +7,7 @@
 
   --color-neo-blue: #0b2447;
   --color-neo-light-blue: #eff6ff;
-  --color-neo-dark-blue: #1a2b3b;
+  --color-neo-dark-blue: #051122;
   --color-neo-white: #FFFFFF;
   --color-neo-bg: #F8FAFC;
   --color-neo-text: #1E293B;
@@ -23,7 +23,13 @@
   body {
     @apply bg-neo-bg text-neo-text font-sans antialiased;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply tracking-tight font-bold;
   }
 }
