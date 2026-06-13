@@ -8,6 +8,16 @@ interface CardProps {
   onDeleteClick?: (id: string, title: string) => void;
 }
 
+function getYouTubeEmbedUrl(url: string): string {
+  if (!url) return "";
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    return `https://www.youtube.com/embed/${match[2]}`;
+  }
+  return url;
+}
+
 export function Card({ id, title, link, type, onDeleteClick }: CardProps) {
   const openPdfInNewTab = () => {
     if (link) {
@@ -48,7 +58,7 @@ export function Card({ id, title, link, type, onDeleteClick }: CardProps) {
         {type === "Youtube" && link && (
           <iframe
             className="w-full aspect-video h-full"
-            src={link.replace("watch?v=", "embed/")}
+            src={getYouTubeEmbedUrl(link)}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
