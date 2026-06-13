@@ -2,6 +2,8 @@
 
 **Brainly** is a powerful personal knowledge management system designed to help you organize your digital life. Save, categorize, and revisit your most important web content, including YouTube videos and PDF documents, all in one sleek, modern interface.
 
+![Brainly Dashboard](screenshot.png)
+
 ---
 
 ## Features
